@@ -10,15 +10,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
-    /* Custom Scrollbar & Snap Styles */
     .custom-scroll::-webkit-scrollbar { width: 6px; }
     .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
 
-  <!-- ================= TOP NAVIGATION BAR (Responsive: Phone / Tablet / Desktop) ================= -->
-  <nav class="bg-black text-white p-4 sticky top-0 z-50 shadow-md">
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <nav class="bg-black text-white p-4 sticky top-0 z-40 shadow-md">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
       
       <!-- Brand & Active Portal Badge -->
@@ -32,16 +31,16 @@
       <!-- Portal Navigation Switcher -->
       <div class="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
         <button onclick="switchMainPortal('marketplace')" id="btn-portal-market" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          🛒 Marketplace Portal
+          🛒 Marketplace
         </button>
         <button onclick="switchMainPortal('reviews')" id="btn-portal-reviews" class="bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          ⭐ Verified Reviews
+          ⭐ Reviews Portal
         </button>
         <button onclick="switchMainPortal('seller')" id="btn-portal-seller" class="bg-amber-500 text-black px-3 py-1.5 rounded-lg text-xs font-bold transition">
           🏪 Seller Studio
         </button>
         <button onclick="switchMainPortal('plans')" id="btn-portal-plans" class="bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          💳 Subscription Plans
+          💳 Plans & Pricing
         </button>
       </div>
 
@@ -54,9 +53,9 @@
     <!-- ================= 1. MARKETPLACE PORTAL ================= -->
     <section id="portal-marketplace" class="space-y-6">
       
-      <!-- Filters (1 col on Phone, 3 cols on Desktop) -->
+      <!-- Filters -->
       <div class="bg-white p-4 rounded-xl shadow-sm grid grid-cols-1 md:grid-cols-3 gap-3 border border-gray-200">
-        <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="🔍 Search products or keywords..." class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="🔍 Search products or sellers..." class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         <select id="category-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="">All Categories</option>
           <option value="Electronics">Electronics</option>
@@ -73,26 +72,27 @@
         </select>
       </div>
 
-      <!-- Feed & Orders Grid (1 Col Phone, 2 Cols Tablet, 3 Cols Desktop) -->
+      <!-- Feed & Orders Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Marketplace Product Feed (2 Columns on Desktop) -->
+        <!-- Marketplace Product Feed -->
         <div class="lg:col-span-2 space-y-4">
           <h2 class="text-lg font-bold text-gray-800 flex items-center justify-between">
             <span>Featured Video & Photo Feed</span>
-            <span class="text-xs text-gray-500 font-normal">Real-time active listings</span>
+            <span class="text-xs text-gray-500 font-normal">Click seller name to inspect reviews</span>
           </h2>
           <div id="reels-feed" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="p-8 text-center text-gray-500 col-span-full">Loading listings...</div>
           </div>
         </div>
 
-        <!-- Orders & Live Chat Sidebar (1 Column on Desktop) -->
+        <!-- Orders & Live Chat Sidebar -->
         <div class="space-y-6">
           
           <!-- My Orders / Purchases Box -->
           <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 mb-3">📦 My Recent Orders & Status</h3>
+            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 mb-3">📦 My Order History</h3>
+            <p class="text-[11px] text-gray-500 mb-2">Reviews unlock only after successful purchase completion.</p>
             <div id="buyer-orders-list" class="space-y-2 max-h-60 overflow-y-auto custom-scroll">
               <p class="text-xs text-gray-400">Loading order history...</p>
             </div>
@@ -100,7 +100,7 @@
 
           <!-- Live Chat Box -->
           <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col h-80">
-            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 mb-2">💬 Marketplace Live Chat</h3>
+            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 mb-2">💬 Live Marketplace Chat</h3>
             <div id="chat-messages" class="flex-1 overflow-y-auto space-y-2 p-2 bg-gray-50 rounded custom-scroll text-xs">
               <p class="text-gray-400 text-center py-4">No messages yet...</p>
             </div>
@@ -120,13 +120,12 @@
     <section id="portal-reviews" class="hidden space-y-6">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
         <div class="border-b pb-4 mb-6">
-          <h2 class="text-2xl font-black text-indigo-950">⭐ Verified Buyer & Supplier Reviews</h2>
-          <p class="text-xs text-gray-500 mt-1">Authentic experiences and multi-criteria ratings submitted by buyers after payment completion.</p>
+          <h2 class="text-2xl font-black text-indigo-950">⭐ All Verified Seller & Product Reviews</h2>
+          <p class="text-xs text-gray-500 mt-1">Submitted by customers after successful purchase completion.</p>
         </div>
 
-        <!-- Live Community Reviews Feed -->
         <div id="reviews-feed-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <p class="text-xs text-gray-400 col-span-full">Loading verified reviews...</p>
+          <p class="text-xs text-gray-400 col-span-full">Loading reviews...</p>
         </div>
       </div>
     </section>
@@ -136,10 +135,15 @@
     <section id="portal-seller" class="hidden max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
       <div class="border-b pb-2">
         <h2 class="text-xl font-bold text-gray-900">🏪 Seller Studio</h2>
-        <p class="text-xs text-gray-500">Post product images, video reels, and manage your inventory</p>
+        <p class="text-xs text-gray-500">Post items and include your seller name for trust building</p>
       </div>
 
       <form onsubmit="handleSellerUpload(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold mb-1">Seller / Shop Name</label>
+          <input type="text" id="prod-seller-name" placeholder="e.g. Tashinga Electronics / Alex M." required class="w-full p-2 border rounded text-xs bg-gray-50">
+        </div>
+
         <div>
           <label class="block text-xs font-bold mb-1">Product Title</label>
           <input type="text" id="prod-title" placeholder="e.g. Leather Jacket / 450W Solar Panel" required class="w-full p-2 border rounded text-xs bg-gray-50">
@@ -177,7 +181,7 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold mb-1">Video Reel File (.mp4 - Pro Plan)</label>
+          <label class="block text-xs font-bold mb-1">Video Reel File (.mp4)</label>
           <input type="file" id="prod-video" accept="video/mp4" class="w-full text-xs text-gray-500">
         </div>
 
@@ -192,7 +196,7 @@
     <section id="portal-plans" class="hidden space-y-6">
       <div class="text-center max-w-2xl mx-auto mb-8">
         <h2 class="text-3xl font-extrabold text-gray-900">Seller Subscription Plans</h2>
-        <p class="text-xs text-gray-500 mt-1">Choose the optimal plan to scale your store and attract buyers across Zimbabwe</p>
+        <p class="text-xs text-gray-500 mt-1">Choose the optimal plan to scale your store across Zimbabwe</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -202,26 +206,24 @@
           <div>
             <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Starter</span>
             <h3 class="text-2xl font-black mt-2">$0.00 <span class="text-xs font-normal text-gray-500">/ forever</span></h3>
-            <p class="text-xs text-gray-600 font-bold mt-2 border-b pb-2">Basic Marketplace Listing Access</p>
+            <p class="text-xs text-gray-600 font-bold mt-2 border-b pb-2">Basic Marketplace Access</p>
             
             <ul class="text-xs text-gray-600 space-y-2.5 mt-3">
               <li class="flex items-start">
                 <span class="text-green-500 font-bold mr-1.5">✓</span>
-                <div><strong>Photo Listings Only:</strong> Ideal for casual individuals listing basic items.</div>
+                <div><strong>Photo Listings Only:</strong> Ideal for individual sellers.</div>
               </li>
               <li class="flex items-start">
                 <span class="text-green-500 font-bold mr-1.5">✓</span>
-                <div><strong>Standard Search Reach:</strong> Included in general search & category filters.</div>
+                <div><strong>Standard Reach:</strong> Appears in search & category filters.</div>
               </li>
               <li class="flex items-start text-gray-400">
                 <span class="font-bold mr-1.5">✕</span>
-                <div><strong>No Video Reels:</strong> Upgrade to Pro to unlock MP4 video reel uploads.</div>
+                <div><strong>No Video Reels:</strong> Requires Pro plan.</div>
               </li>
             </ul>
           </div>
-          <button onclick="switchMainPortal('seller')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">
-            Start Free Account
-          </button>
+          <button onclick="switchMainPortal('seller')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">Start Free Account</button>
         </div>
 
         <!-- Pro Business Plan -->
@@ -235,21 +237,19 @@
             <ul class="text-xs text-gray-600 space-y-2.5 mt-3">
               <li class="flex items-start">
                 <span class="text-green-500 font-bold mr-1.5">✓</span>
-                <div><strong>HD Video Reel Clips:</strong> Upload 60-second video feeds to boost buyer engagement.</div>
+                <div><strong>HD Video Reels:</strong> 60-second video feeds for maximum trust.</div>
               </li>
               <li class="flex items-start">
                 <span class="text-green-500 font-bold mr-1.5">✓</span>
-                <div><strong>Instant WhatsApp Alerts:</strong> Direct WhatsApp lead routing straight to your phone.</div>
+                <div><strong>WhatsApp Direct Alerts:</strong> Instant buyer inquiry routing.</div>
               </li>
               <li class="flex items-start">
                 <span class="text-green-500 font-bold mr-1.5">✓</span>
-                <div><strong>Verified Store Badge:</strong> Builds buyer trust and increases sales conversion.</div>
+                <div><strong>Verified Store Badge:</strong> Builds buyer confidence.</div>
               </li>
             </ul>
           </div>
-          <button onclick="switchMainPortal('seller')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2 rounded-lg text-xs shadow transition">
-            Subscribe to Pro Plan
-          </button>
+          <button onclick="switchMainPortal('seller')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2 rounded-lg text-xs shadow transition">Subscribe to Pro Plan</button>
         </div>
 
         <!-- VIP Enterprise Plan -->
@@ -257,26 +257,24 @@
           <div>
             <span class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">VIP Enterprise</span>
             <h3 class="text-2xl font-black mt-2 text-indigo-400">$9.99 <span class="text-xs font-normal text-gray-400">/ month</span></h3>
-            <p class="text-xs text-indigo-300 font-bold mt-2 border-b border-slate-800 pb-2">Priority Feed Placement & Analytics</p>
+            <p class="text-xs text-indigo-300 font-bold mt-2 border-b border-slate-800 pb-2">Priority Feed & Analytics</p>
             
             <ul class="text-xs text-slate-300 space-y-2.5 mt-3">
               <li class="flex items-start">
                 <span class="text-indigo-400 font-bold mr-1.5">✓</span>
-                <div><strong>Priority Feed Placement:</strong> Positioned at the top of buyer video feeds.</div>
+                <div><strong>Priority Feed Placement:</strong> Positioned at top of reels.</div>
               </li>
               <li class="flex items-start">
                 <span class="text-indigo-400 font-bold mr-1.5">✓</span>
-                <div><strong>Unlimited Listings & Reels:</strong> Scale unlimited product inventory without caps.</div>
+                <div><strong>Unlimited Listings:</strong> No caps on items or videos.</div>
               </li>
               <li class="flex items-start">
                 <span class="text-indigo-400 font-bold mr-1.5">✓</span>
-                <div><strong>Realtime Analytics:</strong> Track views, customer inquiry conversion, and performance.</div>
+                <div><strong>Realtime Analytics:</strong> Track views and sales conversions.</div>
               </li>
             </ul>
           </div>
-          <button onclick="switchMainPortal('seller')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-2 rounded-lg text-xs shadow transition">
-            Get VIP Hybrid Access
-          </button>
+          <button onclick="switchMainPortal('seller')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-2 rounded-lg text-xs shadow transition">Get VIP Hybrid Access</button>
         </div>
 
       </div>
@@ -285,16 +283,37 @@
   </main>
 
 
+  <!-- ================= SELLER PROFILE & PAST REVIEWS MODAL ================= -->
+  <div id="seller-reviews-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded-xl max-w-lg w-full relative shadow-2xl space-y-4">
+      <div class="border-b pb-2 flex justify-between items-center">
+        <div>
+          <h3 id="modal-seller-name" class="text-lg font-bold text-indigo-950">Seller Reviews</h3>
+          <p class="text-xs text-gray-500">Past buyer experiences & trust score</p>
+        </div>
+        <button onclick="document.getElementById('seller-reviews-modal').classList.add('hidden')" class="text-gray-400 hover:text-black font-bold text-lg">✕</button>
+      </div>
+
+      <div id="modal-seller-reviews-list" class="space-y-3 max-h-80 overflow-y-auto custom-scroll">
+        <p class="text-xs text-gray-400">Loading seller feedback...</p>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="document.getElementById('seller-reviews-modal').classList.add('hidden')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-lg text-xs">Close Profile</button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ================= VERIFIED POST-PAYMENT REVIEW MODAL ================= -->
   <div id="verified-review-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded-xl max-w-md w-full relative shadow-2xl space-y-4">
       <div class="border-b pb-2">
-        <h3 class="text-lg font-bold text-indigo-950">Leave Verified Purchase Review</h3>
+        <h3 class="text-lg font-bold text-indigo-950">Leave Purchase Review</h3>
         <p id="rev-modal-product" class="text-xs text-amber-600 font-bold mt-0.5"></p>
       </div>
       
       <form onsubmit="submitVerifiedReview(event)" class="space-y-4">
-        <!-- Multi-Criteria Ratings -->
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="block text-[10px] font-bold mb-1">Product Quality</label>
@@ -330,16 +349,12 @@
 
         <div>
           <label class="block text-xs font-bold mb-1">Your Written Experience</label>
-          <textarea id="rev-modal-text" rows="3" placeholder="How was the product quality and dealing with this supplier?" required class="w-full p-2 border rounded text-xs bg-gray-50 focus:outline-none"></textarea>
+          <textarea id="rev-modal-text" rows="3" placeholder="How was product quality and dealing with this seller?" required class="w-full p-2 border rounded text-xs bg-gray-50 focus:outline-none"></textarea>
         </div>
 
         <div class="flex space-x-2 pt-2">
-          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-lg text-xs shadow transition">
-            Publish Rating
-          </button>
-          <button type="button" onclick="document.getElementById('verified-review-modal').classList.add('hidden')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-lg text-xs transition">
-            Cancel
-          </button>
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-lg text-xs shadow transition">Publish Review</button>
+          <button type="button" onclick="document.getElementById('verified-review-modal').classList.add('hidden')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-lg text-xs transition">Cancel</button>
         </div>
       </form>
     </div>
@@ -348,15 +363,15 @@
 
   <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
   <script>
-    // Supabase Configuration
     const SUPABASE_URL = "https://kuvorxkuyijvntyrsdks.supabase.co";
-    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE"; // Replace with your anon key
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allProducts = [];
     let activeReviewOrderId = null;
+    let activeReviewSellerName = "";
 
-    // --- Portal Navigation Logic ---
+    // Switch between Main Portals
     function switchMainPortal(portal) {
       document.getElementById('portal-marketplace').classList.add('hidden');
       document.getElementById('portal-reviews').classList.add('hidden');
@@ -385,7 +400,7 @@
       } else if (portal === 'reviews') {
         document.getElementById('portal-reviews').classList.remove('hidden');
         btnReviews.className = "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
-        badge.innerText = "⭐ Verified Reviews";
+        badge.innerText = "⭐ Reviews Portal";
         badge.className = "bg-purple-600 text-white text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider";
         loadReviews();
       } else if (portal === 'seller') {
@@ -396,12 +411,12 @@
       } else if (portal === 'plans') {
         document.getElementById('portal-plans').classList.remove('hidden');
         btnPlans.className = "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
-        badge.innerText = "💳 Subscription Plans";
+        badge.innerText = "💳 Plans & Pricing";
         badge.className = "bg-emerald-600 text-white text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider";
       }
     }
 
-    // --- Product Feed Functions ---
+    // Load & Render Products with Seller Name
     async function loadProducts() {
       const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
       if (!error && data) {
@@ -429,11 +444,15 @@
           <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
             <div>
               <h4 class="font-bold text-gray-900 text-sm">${item.title}</h4>
-              <p class="text-xs text-gray-500">${item.location || 'Harare'}</p>
+              <!-- Display Seller Name with Clickable Review Inspector -->
+              <p class="text-xs text-indigo-700 font-bold cursor-pointer hover:underline mt-0.5" onclick="openSellerReviewsModal('${item.seller_name || 'Verified Seller'}')">
+                👤 Seller: ${item.seller_name || 'Verified Seller'} <span class="text-[10px] text-amber-500 font-semibold">(View Reviews)</span>
+              </p>
+              <p class="text-[11px] text-gray-500">${item.location || 'Harare'}</p>
             </div>
             <div class="flex justify-between items-center pt-2 border-t">
               <span class="text-amber-600 font-extrabold text-sm">$${item.price} USD</span>
-              <button onclick="triggerWhatsAppNegotiation('${item.title}', ${item.price})" class="bg-green-600 hover:bg-green-500 text-white font-bold px-3 py-1.5 rounded text-xs transition">
+              <button onclick="triggerWhatsAppNegotiation('${item.title}', ${item.price}, '${item.seller_name || 'Seller'}')" class="bg-green-600 hover:bg-green-500 text-white font-bold px-3 py-1.5 rounded text-xs transition">
                 Buy / Negotiate
               </button>
             </div>
@@ -448,25 +467,56 @@
       const loc = document.getElementById('location-filter').value;
 
       const filtered = allProducts.filter(p => {
-        return (p.title ? p.title.toLowerCase().includes(q) : true) &&
+        return (p.title ? p.title.toLowerCase().includes(q) : true || p.seller_name ? p.seller_name.toLowerCase().includes(q) : true) &&
                (cat ? p.category === cat : true) &&
                (loc ? p.location === loc : true);
       });
       renderProducts(filtered);
     }
 
-    function triggerWhatsAppNegotiation(title, price) {
-      const msg = encodeURIComponent(`Hi, I am interested in buying "${title}" listed for $${price} USD on ZimMarket.`);
+    // View Past Reviews for Specific Seller
+    async function openSellerReviewsModal(sellerName) {
+      document.getElementById('modal-seller-name').innerText = `Seller: ${sellerName}`;
+      document.getElementById('seller-reviews-modal').classList.remove('hidden');
+      
+      const list = document.getElementById('modal-seller-reviews-list');
+      list.innerHTML = `<p class="text-xs text-gray-400">Loading feedback for ${sellerName}...</p>`;
+
+      const { data: reviews } = await supabaseClient.from('reviews').select('*').eq('seller_name', sellerName).order('created_at', { ascending: false });
+
+      if (!reviews || reviews.length === 0) {
+        list.innerHTML = `
+          <div class="p-4 bg-gray-50 border rounded-lg text-center">
+            <p class="text-xs text-gray-500 font-bold">No past reviews yet for this seller.</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">Be the first to leave a review after your purchase!</p>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = reviews.map(r => `
+        <div class="p-3 border rounded-lg bg-gray-50 space-y-1.5">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-gray-800">${r.product_name}</span>
+            <span class="text-amber-500 font-bold">${'⭐'.repeat(r.supplier_rating || 5)}</span>
+          </div>
+          <p class="text-xs text-gray-600">${r.review_text}</p>
+          <span class="text-[10px] text-gray-400 block">— Reviewed by ${r.reviewer_name || 'Verified Buyer'}</span>
+        </div>
+      `).join('');
+    }
+
+    function triggerWhatsAppNegotiation(title, price, seller) {
+      const msg = encodeURIComponent(`Hi ${seller}, I am interested in buying "${title}" listed for $${price} USD on ZimMarket.`);
       window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    // --- Order History & Post-Payment Review Triggers ---
+    // Order History: Post-Payment Review Button Unlocks ONLY when Paid/Completed
     async function loadOrders() {
       const { data: orders } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
       const buyerList = document.getElementById('buyer-orders-list');
       
       if (!orders || orders.length === 0) {
-        buyerList.innerHTML = `<p class="text-xs text-gray-400">No orders recorded yet.</p>`;
+        buyerList.innerHTML = `<p class="text-xs text-gray-400">No purchase records found.</p>`;
         return;
       }
 
@@ -478,7 +528,7 @@
           </div>
           <div>
             ${(o.status === 'Paid' || o.status === 'Completed' || o.status === 'Accepted') 
-              ? `<button onclick="openReviewModal('${o.id}', '${o.product_title || 'Product'}')" class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-2.5 py-1 rounded text-[11px] shadow">⭐ Rate Supplier</button>`
+              ? `<button onclick="openReviewModal('${o.id}', '${o.product_title || 'Product'}', '${o.seller_name || 'Verified Seller'}')" class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-2.5 py-1 rounded text-[11px] shadow">⭐ Leave Review</button>`
               : `<span class="text-gray-400 text-[10px] italic">Locked until paid</span>`
             }
           </div>
@@ -486,16 +536,16 @@
       `).join('');
     }
 
-    function openReviewModal(orderId, productTitle) {
+    function openReviewModal(orderId, productTitle, sellerName) {
       activeReviewOrderId = orderId;
-      document.getElementById('rev-modal-product').innerText = productTitle;
+      activeReviewSellerName = sellerName;
+      document.getElementById('rev-modal-product').innerText = `${productTitle} (Seller: ${sellerName})`;
       document.getElementById('verified-review-modal').classList.remove('hidden');
     }
 
     async function submitVerifiedReview(e) {
       e.preventDefault();
       const product_name = document.getElementById('rev-modal-product').innerText;
-      const reviewer_name = 'Verified Buyer';
       const product_rating = parseInt(document.getElementById('rev-prod-rating').value);
       const supplier_rating = parseInt(document.getElementById('rev-supp-rating').value);
       const delivery_rating = parseInt(document.getElementById('rev-del-rating').value);
@@ -503,8 +553,9 @@
 
       const { error } = await supabaseClient.from('reviews').insert([{
         order_id: activeReviewOrderId,
+        seller_name: activeReviewSellerName,
         product_name,
-        reviewer_name,
+        reviewer_name: 'Verified Buyer',
         product_rating,
         supplier_rating,
         delivery_rating,
@@ -514,19 +565,19 @@
       if (error) {
         alert("Error submitting review: " + error.message);
       } else {
-        alert("Thank you! Your verified review and seller rating have been published.");
+        alert("Thank you! Your verified review has been published.");
         document.getElementById('verified-review-modal').classList.add('hidden');
         switchMainPortal('reviews');
       }
     }
 
-    // --- Reviews Portal Functions ---
+    // Load All Reviews in Portal
     async function loadReviews() {
       const { data, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
       const feed = document.getElementById('reviews-feed-list');
       
       if (error || !data || data.length === 0) {
-        feed.innerHTML = `<p class="text-xs text-gray-400 col-span-full">No verified reviews published yet.</p>`;
+        feed.innerHTML = `<p class="text-xs text-gray-400 col-span-full">No reviews published yet.</p>`;
         return;
       }
 
@@ -535,8 +586,9 @@
           <div class="flex justify-between items-start border-b pb-2">
             <div>
               <h4 class="font-bold text-gray-900 text-xs">${r.product_name}</h4>
-              <span class="text-[10px] text-indigo-600 font-bold">✔ Verified Purchase</span>
+              <p class="text-[10px] text-indigo-700 font-bold">Seller: ${r.seller_name || 'Verified Seller'}</p>
             </div>
+            <span class="text-[10px] bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded">✔ Verified Buy</span>
           </div>
           
           <div class="grid grid-cols-3 gap-1 text-[10px] bg-white p-2 rounded border">
@@ -546,12 +598,12 @@
           </div>
 
           <p class="text-gray-700 text-xs pt-1">${r.review_text}</p>
-          <span class="text-[10px] text-gray-400 block">— ${r.reviewer_name}</span>
+          <span class="text-[10px] text-gray-400 block">— ${r.reviewer_name || 'Verified Buyer'}</span>
         </div>
       `).join('');
     }
 
-    // --- Live Chat Functions ---
+    // Live Chat Functions
     async function loadChatMessages() {
       const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
       const box = document.getElementById('chat-messages');
@@ -581,13 +633,14 @@
       }
     }
 
-    // --- Seller Upload Function ---
+    // Seller Studio Upload Function
     async function handleSellerUpload(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-upload');
       btn.innerText = "Uploading media...";
       btn.disabled = true;
 
+      const seller_name = document.getElementById('prod-seller-name').value;
       const title = document.getElementById('prod-title').value;
       const price = parseFloat(document.getElementById('prod-price').value);
       const category = document.getElementById('prod-category').value;
@@ -615,12 +668,12 @@
         }
 
         const { error } = await supabaseClient.from('products').insert([{
-          title, price, category, location, image_url, video_url
+          seller_name, title, price, category, location, image_url, video_url
         }]);
 
         if (error) throw error;
 
-        alert("Product successfully published to ZimMarket!");
+        alert("Product published successfully!");
         switchMainPortal('marketplace');
       } catch (err) {
         alert("Upload error: " + err.message);
