@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZimMarketplace - Dual Portal Commerce</title>
+  <title>ZimMarketplace - Realtime Dual Portal</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -56,7 +56,7 @@
     <div id="buyer-orders-view" class="hidden bg-white p-4 rounded-xl shadow space-y-3">
       <h3 class="font-bold text-lg text-indigo-900">My Orders & Offers</h3>
       <div id="buyer-orders-list" class="space-y-2">
-        <p class="text-xs text-gray-500">No active orders yet. Explore the feed to place an offer!</p>
+        <p class="text-xs text-gray-500">Loading your orders...</p>
       </div>
     </div>
 
@@ -100,7 +100,6 @@
         </div>
       </div>
 
-      <!-- Seller Sub-Tabs -->
       <div class="flex space-x-4 mb-4 border-b pb-2">
         <button onclick="switchSellerSubTab('upload')" class="font-bold text-xs text-amber-600 border-b-2 border-amber-600 pb-1">Upload New Item</button>
         <button onclick="switchSellerSubTab('orders')" class="font-bold text-xs text-gray-500 hover:text-amber-600 pb-1">Incoming Buyer Offers</button>
@@ -144,15 +143,8 @@
       <!-- Incoming Offers Desk -->
       <div id="seller-orders-desk" class="hidden space-y-3">
         <h4 class="font-bold text-sm text-gray-800">Pending Negotiations & Orders</h4>
-        <div class="border p-3 rounded-lg bg-gray-50 flex justify-between items-center text-xs">
-          <div>
-            <p class="font-bold">Sneaker Hub Harare</p>
-            <p class="text-gray-500">Buyer Offer: <span class="text-green-600 font-bold">$40.00 USD</span> (Listed: $45.00)</p>
-          </div>
-          <div class="space-x-1">
-            <button onclick="alert('Offer Accepted! Customer notified via SMS/WhatsApp.')" class="bg-green-600 text-white font-bold px-2 py-1 rounded">Accept</button>
-            <button onclick="alert('Counter offer sent to buyer.')" class="bg-gray-300 text-gray-700 font-bold px-2 py-1 rounded">Decline</button>
-          </div>
+        <div id="seller-orders-list" class="space-y-2">
+          <p class="text-xs text-gray-500">Loading incoming offers...</p>
         </div>
       </div>
     </div>
@@ -382,6 +374,7 @@
         document.getElementById('portal-badge').innerText = "Seller Portal";
         document.getElementById('portal-badge').className = "bg-amber-500 text-black text-xs px-2 py-0.5 rounded font-bold uppercase";
         updateSellerLimits();
+        loadOrdersFromDB();
       }
     }
 
@@ -399,7 +392,10 @@
       document.getElementById('buyer-cashback-view').classList.add('hidden');
 
       if (subTab === 'feed') document.getElementById('buyer-feed-view').classList.remove('hidden');
-      if (subTab === 'orders') document.getElementById('buyer-orders-view').classList.remove('hidden');
+      if (subTab === 'orders') {
+        document.getElementById('buyer-orders-view').classList.remove('hidden');
+        loadOrdersFromDB();
+      }
       if (subTab === 'cashback') document.getElementById('buyer-cashback-view').classList.remove('hidden');
     }
 
@@ -410,6 +406,7 @@
       } else {
         document.getElementById('seller-upload-form').classList.add('hidden');
         document.getElementById('seller-orders-desk').classList.remove('hidden');
+        loadOrdersFromDB();
       }
     }
 
@@ -458,6 +455,47 @@
       `).join('');
     }
 
+    async function loadOrdersFromDB() {
+      const { data: orders, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+
+      if (error || !orders || orders.length === 0) {
+        document.getElementById('buyer-orders-list').innerHTML = `<p class="text-xs text-gray-500">No active orders found.</p>`;
+        document.getElementById('seller-orders-list').innerHTML = `<p class="text-xs text-gray-500">No incoming buyer offers yet.</p>`;
+        return;
+      }
+
+      // Render Buyer View
+      document.getElementById('buyer-orders-list').innerHTML = orders.map(o => `
+        <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs">
+          <div>
+            <h4 class="font-bold text-gray-800">${o.product_title}</h4>
+            <p class="text-gray-500">Offer Price: $${o.offer_price}.00 USD</p>
+          </div>
+          <span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[10px]">${o.status}</span>
+        </div>
+      `).join('');
+
+      // Render Seller Desk View
+      document.getElementById('seller-orders-list').innerHTML = orders.map(o => `
+        <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs">
+          <div>
+            <p class="font-bold">${o.product_title}</p>
+            <p class="text-gray-500">Offer: <span class="text-green-600 font-bold">$${o.offer_price}.00 USD</span> (${o.buyer_email || 'Guest'})</p>
+          </div>
+          <div class="space-x-1">
+            <button onclick="updateOrderStatus('${o.id}', 'Accepted')" class="bg-green-600 text-white font-bold px-2 py-1 rounded">Accept</button>
+            <button onclick="updateOrderStatus('${o.id}', 'Declined')" class="bg-gray-300 text-gray-700 font-bold px-2 py-1 rounded">Decline</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
+      if (error) alert("Error: " + error.message);
+      else loadOrdersFromDB();
+    }
+
     async function handleSellerUpload(event) {
       event.preventDefault();
       const title = document.getElementById('prod-title').value;
@@ -486,38 +524,48 @@
       document.getElementById('paynow-modal').classList.add('hidden');
     }
 
-    function processMobilePayment() {
+    async function processMobilePayment() {
       const phone = document.getElementById('ecocash-number').value;
       if(!phone) { alert('Please enter EcoCash number'); return; }
       
-      const offerPrice = document.getElementById('offer-price').value || selectedProductForOffer.price;
-      addOrderToBuyerList(selectedProductForOffer.title, offerPrice, 'Processing Payment');
+      const offerPrice = parseFloat(document.getElementById('offer-price').value) || selectedProductForOffer.price;
+      const userEmail = currentUser ? currentUser.email : 'Guest Buyer';
+
+      await supabaseClient.from('orders').insert([{
+        product_title: selectedProductForOffer.title,
+        offer_price: offerPrice,
+        status: 'Processing EcoCash',
+        buyer_email: userEmail
+      }]);
       
       alert(`EcoCash prompt sent to ${phone} for $${offerPrice}. Check your phone to authorize.`);
       closePaynowModal();
+      switchBuyerTab('orders');
     }
 
-    function openWhatsAppNegotiation() {
-      const offerPrice = document.getElementById('offer-price').value || selectedProductForOffer.price;
+    async function openWhatsAppNegotiation() {
+      const offerPrice = parseFloat(document.getElementById('offer-price').value) || selectedProductForOffer.price;
+      const userEmail = currentUser ? currentUser.email : 'Guest Buyer';
+
+      await supabaseClient.from('orders').insert([{
+        product_title: selectedProductForOffer.title,
+        offer_price: offerPrice,
+        status: 'WhatsApp Negotiating',
+        buyer_email: userEmail
+      }]);
+
       const msg = encodeURIComponent(`Hi! I am interested in buying "${selectedProductForOffer.title}" listed for $${selectedProductForOffer.price}. My offer is $${offerPrice}. Is this available?`);
-      
-      addOrderToBuyerList(selectedProductForOffer.title, offerPrice, 'WhatsApp Negotiating');
       window.open(`https://wa.me/263770000000?text=${msg}`, '_blank');
       closePaynowModal();
+      switchBuyerTab('orders');
     }
 
-    function addOrderToBuyerList(title, price, status) {
-      const ordersList = document.getElementById('buyer-orders-list');
-      ordersList.innerHTML = `
-        <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs mb-2">
-          <div>
-            <h4 class="font-bold text-gray-800">${title}</h4>
-            <p class="text-gray-500">Price Offered: $${price}.00 USD</p>
-          </div>
-          <span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[10px]">${status}</span>
-        </div>
-      ` + ordersList.innerHTML;
-    }
+    // Subscribe to Realtime Updates
+    supabaseClient.channel('orders-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        loadOrdersFromDB();
+      })
+      .subscribe();
 
     loadProductsFromDB();
   </script>
