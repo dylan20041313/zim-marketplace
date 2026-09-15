@@ -10,7 +10,6 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* Hide scrollbars while allowing smooth scrolling */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .custom-scroll::-webkit-scrollbar { width: 5px; }
@@ -19,7 +18,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- ================= 1. TOP ANNOUNCEMENT & UTILITY BAR ================= -->
+  <!-- ================= 1. TOP UTILITY BAR ================= -->
   <div class="bg-black text-white text-[11px] py-1.5 px-4 flex justify-between items-center border-b border-gray-800">
     <div class="flex items-center space-x-4">
       <span>🚚 Free Shipping on Orders Over $30</span>
@@ -28,13 +27,11 @@
     </div>
     
     <div class="flex items-center space-x-4">
-      <!-- Language / Currency Selector -->
       <div class="flex items-center space-x-1 cursor-pointer hover:text-amber-400 text-xs">
         <i data-lucide="globe" class="w-3.5 h-3.5"></i>
         <span>USD $ | EN</span>
       </div>
 
-      <!-- Customer Service Direct Button -->
       <button onclick="toggleChatbot()" class="flex items-center space-x-1 hover:text-amber-400 transition text-xs">
         <i data-lucide="headphones" class="w-3.5 h-3.5"></i>
         <span>Customer Service</span>
@@ -42,18 +39,18 @@
     </div>
   </div>
 
-  <!-- ================= 2. MAIN BRAND HEADER ================= -->
+  <!-- ================= 2. MAIN HEADER ================= -->
   <header class="bg-white sticky top-0 z-40 shadow-sm border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       
-      <!-- Top Left: Company Brand Name -->
+      <!-- Brand Logo -->
       <div class="flex items-center space-x-2">
-        <a href="#" class="text-2xl font-black tracking-tight text-black flex items-center">
+        <a href="#" onclick="showSection('home')" class="text-2xl font-black tracking-tight text-black flex items-center">
           <span class="text-indigo-600">Zim</span>Market<span class="text-amber-500 text-3xl font-serif">.</span>
         </a>
       </div>
 
-      <!-- Center: Search Bar with Categories Filter -->
+      <!-- Search Bar -->
       <div class="flex-1 max-w-2xl relative flex items-center">
         <div class="flex w-full border-2 border-indigo-600 rounded-full overflow-hidden bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-300">
           <input 
@@ -69,10 +66,10 @@
         </div>
       </div>
 
-      <!-- Right Side Tools: Account Hover Menu, Wishlist & Cart -->
+      <!-- User Account & Cart Controls -->
       <div class="flex items-center space-x-6">
         
-        <!-- Hover User Profile / Account Menu -->
+        <!-- Hover Account Menu -->
         <div class="relative group py-2">
           <button class="flex items-center space-x-1 hover:text-indigo-600 transition">
             <i data-lucide="user" class="w-6 h-6"></i>
@@ -82,50 +79,50 @@
             </div>
           </button>
 
-          <!-- Hover Dropdown Modal -->
+          <!-- Dropdown Menu -->
           <div class="absolute right-0 top-full hidden group-hover:block w-64 bg-white shadow-xl rounded-xl border border-gray-100 p-4 z-50 transition-all">
             <div class="space-y-2 pb-3 border-b border-gray-100">
-              <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-xs transition">Sign In</button>
-              <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">Register Account</button>
+              <button onclick="openAuthModal('signin')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-xs transition">Sign In</button>
+              <button onclick="openAuthModal('register')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">Register Account</button>
+              
+              <!-- BECOME A SELLER BUTTON -->
+              <button onclick="openSellerPortal()" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-black py-2 rounded-lg text-xs flex items-center justify-center space-x-1.5 transition shadow-sm mt-2">
+                <i data-lucide="store" class="w-4 h-4"></i>
+                <span>Become a Seller</span>
+              </button>
             </div>
             
             <ul class="py-2 text-xs space-y-1 text-gray-700">
-              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="package" class="w-4 h-4 text-indigo-600"></i><span>My Orders</span></a></li>
-              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="message-square" class="w-4 h-4 text-indigo-600"></i><span>My Messages</span></a></li>
-              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="ticket" class="w-4 h-4 text-indigo-600"></i><span>My Coupons</span></a></li>
-              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="coins" class="w-4 h-4 text-indigo-600"></i><span>My Points</span></a></li>
-              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="clock" class="w-4 h-4 text-indigo-600"></i><span>Recently Viewed</span></a></li>
-              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50 border-t mt-1 pt-2"><i data-lucide="grid" class="w-4 h-4 text-indigo-600"></i><span>More Services</span></a></li>
+              <li><button onclick="showSection('orders')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="package" class="w-4 h-4 text-indigo-600"></i><span>My Orders</span></button></li>
+              <li><button onclick="showSection('messages')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="message-square" class="w-4 h-4 text-indigo-600"></i><span>My Messages</span></button></li>
+              <li><button onclick="showSection('coupons')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="ticket" class="w-4 h-4 text-indigo-600"></i><span>My Coupons</span></button></li>
+              <li><button onclick="showSection('points')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="coins" class="w-4 h-4 text-indigo-600"></i><span>My Points</span></button></li>
+              <li><button onclick="showSection('recently_viewed')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="clock" class="w-4 h-4 text-indigo-600"></i><span>Recently Viewed</span></button></li>
+              <li><button onclick="showSection('services')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50 border-t mt-1 pt-2"><i data-lucide="grid" class="w-4 h-4 text-indigo-600"></i><span>More Services</span></button></li>
             </ul>
           </div>
         </div>
 
-        <!-- Wishlist (Likes) Button -->
+        <!-- Wishlist -->
         <button onclick="toggleWishlistDrawer()" class="relative hover:text-indigo-600 transition flex items-center">
           <i data-lucide="heart" class="w-6 h-6"></i>
           <span id="wishlist-count" class="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
         </button>
 
-        <!-- Cart Button -->
+        <!-- Cart -->
         <button onclick="toggleCartDrawer()" class="relative hover:text-indigo-600 transition flex items-center">
           <i data-lucide="shopping-bag" class="w-6 h-6"></i>
           <span id="cart-count" class="absolute -top-1.5 -right-2 bg-indigo-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
         </button>
 
       </div>
-
     </div>
 
     <!-- ================= 3. CATEGORIES NAVIGATION SLIDER ================= -->
     <div class="border-t border-gray-100 bg-white">
       <div class="max-w-7xl mx-auto px-4 flex items-center relative">
-        
-        <!-- Left Slider Arrow -->
-        <button onclick="slideCategories('left')" class="p-1 text-gray-400 hover:text-black z-10">
-          <i data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
+        <button onclick="slideCategories('left')" class="p-1 text-gray-400 hover:text-black z-10"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
 
-        <!-- Scrollable Category Options -->
         <div id="category-scroll" class="flex items-center space-x-6 overflow-x-auto no-scrollbar py-2.5 text-xs font-semibold whitespace-nowrap scroll-smooth flex-1 px-2">
           <button onclick="filterCategory('All')" class="text-indigo-600 font-bold border-b-2 border-indigo-600 pb-0.5">Just For You</button>
           <button onclick="filterCategory('New In')" class="text-rose-500 hover:text-indigo-600">🔥 New In</button>
@@ -142,44 +139,159 @@
           <button onclick="filterCategory('Beauty')" class="text-gray-600 hover:text-indigo-600">Beauty</button>
         </div>
 
-        <!-- Right Slider Arrow -->
-        <button onclick="slideCategories('right')" class="p-1 text-gray-400 hover:text-black z-10">
-          <i data-lucide="chevron-right" class="w-5 h-5"></i>
-        </button>
-
+        <button onclick="slideCategories('right')" class="p-1 text-gray-400 hover:text-black z-10"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
       </div>
     </div>
   </header>
 
-  <!-- ================= 4. MAIN PRODUCT FEED & FILTERS ================= -->
-  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
-    
-    <!-- Filter Controls Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-200 mb-6 shadow-sm">
-      <div class="flex items-center space-x-2 text-xs font-bold text-gray-700">
-        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
-        <span>Sort By:</span>
-        <select id="sort-select" onchange="applySorting()" class="bg-gray-100 p-1.5 rounded-lg border-none focus:outline-none text-xs">
-          <option value="featured">Featured Picks</option>
-          <option value="low-high">Price: Low to High</option>
-          <option value="high-low">Price: High to Low</option>
-          <option value="rating">Top Rated</option>
-        </select>
+  <!-- ================= 4. DYNAMIC CONTENT AREA ================= -->
+  <main id="main-content" class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+    <!-- Default Product Marketplace View -->
+    <div id="home-view">
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-200 mb-6 shadow-sm">
+        <div class="flex items-center space-x-2 text-xs font-bold text-gray-700">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+          <span>Sort By:</span>
+          <select id="sort-select" onchange="applySorting()" class="bg-gray-100 p-1.5 rounded-lg border-none focus:outline-none text-xs">
+            <option value="featured">Featured Picks</option>
+            <option value="low-high">Price: Low to High</option>
+            <option value="high-low">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+          </select>
+        </div>
+
+        <div class="text-xs text-gray-500">
+          Showing <span id="product-count" class="font-bold text-black">0</span> verified items
+        </div>
       </div>
 
-      <div class="text-xs text-gray-500">
-        Showing <span id="product-count" class="font-bold text-black">0</span> verified items
+      <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+    </div>
+
+    <!-- Account Sub-View Container -->
+    <div id="account-view" class="hidden bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <div class="flex items-center justify-between border-b pb-4 mb-4">
+        <h2 id="view-title" class="text-xl font-extrabold text-gray-900">Account Section</h2>
+        <button onclick="showSection('home')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg font-bold">← Back to Shopping</button>
       </div>
+      <div id="view-body" class="text-xs text-gray-600"></div>
     </div>
-
-    <!-- Product Grid -->
-    <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      <!-- Product cards dynamically populated -->
-    </div>
-
   </main>
 
-  <!-- ================= 5. SLIDE-OVER CART DRAWER ================= -->
+  <!-- ================= 5. SELLER PORTAL MODAL ================= -->
+  <div id="seller-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 relative">
+      <button onclick="closeSellerPortal()" class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
+
+      <div class="text-center max-w-lg mx-auto mb-8">
+        <span class="text-indigo-600 font-bold text-xs uppercase tracking-wider">Merchant Portal</span>
+        <h2 class="text-2xl font-black text-gray-900 mt-1">Start Selling on ZimMarket</h2>
+        <p class="text-xs text-gray-500 mt-1">Set up your storefront like Shopify, manage stock, and receive payouts globally.</p>
+      </div>
+
+      <!-- Subscription Tiers -->
+      <div class="grid md:grid-cols-3 gap-4 mb-8">
+        <div class="border border-gray-200 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-600 transition">
+          <div>
+            <h3 class="font-bold text-sm text-gray-800">Basic Seller</h3>
+            <p class="text-2xl font-black text-gray-900 my-2">$0 <span class="text-xs text-gray-400 font-normal">/mo</span></p>
+            <ul class="text-[11px] text-gray-600 space-y-1.5 mb-4">
+              <li>✓ Up to 10 product listings</li>
+              <li>✓ Standard store page</li>
+              <li>✓ 5% transaction fee</li>
+            </ul>
+          </div>
+          <button onclick="selectPlan('Basic Free')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs">Start Free</button>
+        </div>
+
+        <div class="border-2 border-indigo-600 rounded-xl p-4 flex flex-col justify-between relative bg-indigo-50/30">
+          <span class="absolute -top-2.5 right-4 bg-indigo-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">RECOMMENDED</span>
+          <div>
+            <h3 class="font-bold text-sm text-indigo-900">Pro Merchant</h3>
+            <p class="text-2xl font-black text-indigo-600 my-2">$15 <span class="text-xs text-gray-400 font-normal">/mo</span></p>
+            <ul class="text-[11px] text-gray-600 space-y-1.5 mb-4">
+              <li>✓ Unlimited products</li>
+              <li>✓ Custom domain & branding</li>
+              <li>✓ 2.5% transaction fee</li>
+              <li>✓ Direct EcoCash/PayPal payouts</li>
+            </ul>
+          </div>
+          <button onclick="selectPlan('Pro Merchant')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-xs">Upgrade to Pro</button>
+        </div>
+
+        <div class="border border-gray-200 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-600 transition">
+          <div>
+            <h3 class="font-bold text-sm text-gray-800">Enterprise</h3>
+            <p class="text-2xl font-black text-gray-900 my-2">$45 <span class="text-xs text-gray-400 font-normal">/mo</span></p>
+            <ul class="text-[11px] text-gray-600 space-y-1.5 mb-4">
+              <li>✓ Dedicated store manager</li>
+              <li>✓ 0% platform commission</li>
+              <li>✓ Priority search placements</li>
+            </ul>
+          </div>
+          <button onclick="selectPlan('Enterprise')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs">Select Enterprise</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 6. CHECKOUT PAYMENT MODAL ================= -->
+  <div id="checkout-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+      <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
+
+      <h3 class="font-extrabold text-lg text-gray-900 mb-2">Complete Checkout</h3>
+      <p class="text-xs text-gray-500 mb-4">Select your payment method to finalize the order.</p>
+
+      <div class="space-y-3 mb-6">
+        <label class="flex items-center space-x-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+          <input type="radio" name="payment" value="card" checked class="text-indigo-600">
+          <span class="text-xs font-bold">Debit / Credit Card (Visa/Mastercard)</span>
+        </label>
+        <label class="flex items-center space-x-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+          <input type="radio" name="payment" value="ecocash" class="text-indigo-600">
+          <span class="text-xs font-bold">EcoCash / Mobile Money</span>
+        </label>
+        <label class="flex items-center space-x-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+          <input type="radio" name="payment" value="paypal" class="text-indigo-600">
+          <span class="text-xs font-bold">PayPal</span>
+        </label>
+      </div>
+
+      <div class="border-t pt-3 flex justify-between font-bold text-sm mb-4">
+        <span>Total Payable:</span>
+        <span id="checkout-total-amount" class="text-indigo-600">$0.00</span>
+      </div>
+
+      <button onclick="processPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
+        Pay Now
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= 7. AUTHENTICATION MODAL ================= -->
+  <div id="auth-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
+      <h3 id="auth-title" class="font-extrabold text-lg text-gray-900 mb-4">Sign In</h3>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-gray-600 mb-1 font-bold">Email Address</label>
+          <input type="email" required class="w-full border p-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+        </div>
+        <div>
+          <label class="block text-gray-600 mb-1 font-bold">Password</label>
+          <input type="password" required class="w-full border p-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg transition mt-2">
+          Continue
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= 8. DRAWERS (CART & WISHLIST) ================= -->
   <div id="cart-drawer" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
     <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-4">
       <div>
@@ -190,9 +302,7 @@
           </h3>
           <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-black font-bold">✕</button>
         </div>
-        <div id="cart-items-container" class="space-y-3 max-h-[60vh] overflow-y-auto custom-scroll">
-          <p class="text-xs text-gray-400 text-center py-8">Your cart is empty.</p>
-        </div>
+        <div id="cart-items-container" class="space-y-3 max-h-[60vh] overflow-y-auto custom-scroll"></div>
       </div>
 
       <div class="border-t pt-4 space-y-3">
@@ -200,14 +310,13 @@
           <span>Subtotal:</span>
           <span id="cart-total" class="text-indigo-600">$0.00 USD</span>
         </div>
-        <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
+        <button onclick="openCheckoutModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
           Proceed to Checkout
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= 6. SLIDE-OVER WISHLIST DRAWER ================= -->
   <div id="wishlist-drawer" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
     <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-4">
       <div>
@@ -218,22 +327,18 @@
           </h3>
           <button onclick="toggleWishlistDrawer()" class="text-gray-400 hover:text-black font-bold">✕</button>
         </div>
-        <div id="wishlist-items-container" class="space-y-3 max-h-[70vh] overflow-y-auto custom-scroll">
-          <p class="text-xs text-gray-400 text-center py-8">No liked items yet.</p>
-        </div>
+        <div id="wishlist-items-container" class="space-y-3 max-h-[70vh] overflow-y-auto custom-scroll"></div>
       </div>
     </div>
   </div>
 
-  <!-- ================= 7. CUSTOMER SERVICE CHATBOT ================= -->
+  <!-- ================= 9. CHATBOT WIDGET ================= -->
   <div id="chatbot-widget" class="fixed bottom-4 right-4 z-50">
-    <!-- Trigger Floating Button -->
     <button onclick="toggleChatbot()" class="bg-indigo-600 hover:bg-indigo-700 text-white p-3.5 rounded-full shadow-2xl flex items-center space-x-2">
       <i data-lucide="message-circle" class="w-6 h-6"></i>
       <span class="text-xs font-bold hidden sm:inline">Help & Support</span>
     </button>
 
-    <!-- Chat Window Container -->
     <div id="chat-window" class="hidden absolute bottom-16 right-0 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col h-96">
       <div class="bg-indigo-600 text-white p-3 flex justify-between items-center">
         <div class="flex items-center space-x-2">
@@ -248,23 +353,21 @@
 
       <div id="chat-messages" class="flex-1 p-3 overflow-y-auto custom-scroll space-y-2 text-xs bg-gray-50">
         <div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700">
-          Hello! 👋 Welcome to ZimMarket. How can I help you with orders, shipping, or products today?
+          Hello! 👋 Welcome to ZimMarket. How can I help you today?
         </div>
       </div>
 
       <form onsubmit="handleChatSubmit(event)" class="p-2 bg-white border-t flex gap-2">
-        <input type="text" id="chat-input" placeholder="Type a message..." required class="flex-1 text-xs border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-600">
+        <input type="text" id="chat-input" placeholder="Type a message..." required class="flex-1 text-xs border rounded-lg px-3 py-2 focus:outline-none">
         <button type="submit" class="bg-indigo-600 text-white px-3 py-2 rounded-lg text-xs font-bold">Send</button>
       </form>
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <!-- ================= JAVASCRIPT ENGINE ================= -->
   <script>
-    // Initialize Icons
     lucide.createIcons();
 
-    // Sample Products Data
     const productsData = [
       { id: 1, title: "Floral Summer Chiffon Dress", price: 18.99, category: "Womens Clothing", rating: 4.8, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400", seller: "Aeterna Apparel" },
       { id: 2, title: "Classic Men's Slim Fit Jacket", price: 42.00, category: "Mens Clothing", rating: 4.6, image: "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=400", seller: "Rich Suiting" },
@@ -279,8 +382,8 @@
     let currentProducts = [...productsData];
     let cart = [];
     let wishlist = [];
+    let recentlyViewed = [];
 
-    // Render Product Cards
     function renderProducts(items) {
       const grid = document.getElementById('product-grid');
       document.getElementById('product-count').innerText = items.length;
@@ -292,11 +395,9 @@
 
       grid.innerHTML = items.map(p => `
         <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col justify-between group">
-          <div class="relative aspect-square overflow-hidden bg-gray-100">
+          <div class="relative aspect-square overflow-hidden bg-gray-100 cursor-pointer" onclick="trackView(${p.id})">
             <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-            
-            <!-- Wishlist Heart Button -->
-            <button onclick="toggleWishlist(${p.id})" class="absolute top-2 right-2 bg-white/80 backdrop-blur p-1.5 rounded-full hover:bg-white text-gray-600 hover:text-rose-500 transition">
+            <button onclick="event.stopPropagation(); toggleWishlist(${p.id})" class="absolute top-2 right-2 bg-white/80 backdrop-blur p-1.5 rounded-full hover:bg-white text-gray-600 hover:text-rose-500 transition">
               <i data-lucide="heart" class="w-4 h-4 ${wishlist.some(w => w.id === p.id) ? 'fill-rose-500 text-rose-500' : ''}"></i>
             </button>
           </div>
@@ -324,52 +425,112 @@
       lucide.createIcons();
     }
 
-    // Category Filter Function
-    function filterCategory(cat) {
-      if (cat === 'All' || cat === 'Just For You') {
-        currentProducts = [...productsData];
-      } else {
-        currentProducts = productsData.filter(p => p.category === cat);
+    // Dynamic Navigation System
+    function showSection(sectionKey) {
+      const homeView = document.getElementById('home-view');
+      const accountView = document.getElementById('account-view');
+      const title = document.getElementById('view-title');
+      const body = document.getElementById('view-body');
+
+      if (sectionKey === 'home') {
+        homeView.classList.remove('hidden');
+        accountView.classList.add('hidden');
+        return;
       }
+
+      homeView.classList.add('hidden');
+      accountView.classList.remove('hidden');
+
+      const views = {
+        orders: { title: "My Orders", content: "<p>You have no active orders placed yet.</p>" },
+        messages: { title: "My Messages", content: "<p>Your inbox is clear. No seller inquiries active.</p>" },
+        coupons: { title: "My Coupons", content: "<p class='text-emerald-600 font-bold'>🎉 Active Coupon: WELCOME10 (10% OFF on first order)</p>" },
+        points: { title: "My Rewards Points", content: "<p>You currently have <b>150 ZimPoints</b> available ($1.50 USD value).</p>" },
+        recently_viewed: { 
+          title: "Recently Viewed", 
+          content: recentlyViewed.length ? 
+            `<div class='grid grid-cols-2 sm:grid-cols-4 gap-3'>${recentlyViewed.map(item => `<div class='border p-2 rounded-lg'><img src='${item.image}' class='w-full h-24 object-cover rounded mb-1'><p class='font-bold'>${item.title}</p></div>`).join('')}</div>` 
+            : "<p>You haven't viewed any specific items recently.</p>" 
+        },
+        services: { title: "More Services", content: "<p>Buyer Protection Policy • Dispute Resolution • Logistics Tracker</p>" }
+      };
+
+      if (views[sectionKey]) {
+        title.innerText = views[sectionKey].title;
+        body.innerHTML = views[sectionKey].content;
+      }
+    }
+
+    function trackView(id) {
+      const prod = productsData.find(p => p.id === id);
+      if (prod && !recentlyViewed.some(p => p.id === id)) {
+        recentlyViewed.push(prod);
+      }
+    }
+
+    // Seller Portal Logic
+    function openSellerPortal() { document.getElementById('seller-modal').classList.remove('hidden'); }
+    function closeSellerPortal() { document.getElementById('seller-modal').classList.add('hidden'); }
+    function selectPlan(planName) {
+      alert(`Thank you for selecting the ${planName} plan! Transferring to store construction setup...`);
+      closeSellerPortal();
+    }
+
+    // Auth Modals
+    function openAuthModal(type) {
+      document.getElementById('auth-title').innerText = type === 'signin' ? 'Sign In to Account' : 'Register New Account';
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      alert("Authentication successful!");
+      closeAuthModal();
+    }
+
+    // Checkout Flow
+    function openCheckoutModal() {
+      if (cart.length === 0) return alert("Your cart is empty!");
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      document.getElementById('checkout-total-amount').innerText = `$${total.toFixed(2)} USD`;
+      document.getElementById('cart-drawer').classList.add('hidden');
+      document.getElementById('checkout-modal').classList.remove('hidden');
+    }
+    function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
+    function processPayment() {
+      alert("Payment processed successfully! Your order has been placed.");
+      cart = [];
+      updateCartUI();
+      closeCheckoutModal();
+    }
+
+    // Filtering & Categories
+    function filterCategory(cat) {
+      currentProducts = (cat === 'All' || cat === 'Just For You') ? [...productsData] : productsData.filter(p => p.category === cat);
+      showSection('home');
       renderProducts(currentProducts);
     }
-
-    // Horizontal Scroll Slider
-    function slideCategories(direction) {
-      const container = document.getElementById('category-scroll');
-      container.scrollBy({ left: direction === 'left' ? -150 : 150, behavior: 'smooth' });
+    function slideCategories(dir) {
+      document.getElementById('category-scroll').scrollBy({ left: dir === 'left' ? -150 : 150, behavior: 'smooth' });
     }
-
-    // Search Filter Function
     function handleSearch() {
-      const query = document.getElementById('search-input').value.toLowerCase();
-      const filtered = productsData.filter(p => 
-        p.title.toLowerCase().includes(query) || 
-        p.category.toLowerCase().includes(query) ||
-        p.seller.toLowerCase().includes(query)
-      );
-      renderProducts(filtered);
+      const q = document.getElementById('search-input').value.toLowerCase();
+      renderProducts(productsData.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)));
     }
-
-    // Sorting Function
     function applySorting() {
-      const sortVal = document.getElementById('sort-select').value;
+      const val = document.getElementById('sort-select').value;
       let sorted = [...currentProducts];
-
-      if (sortVal === 'low-high') sorted.sort((a,b) => a.price - b.price);
-      if (sortVal === 'high-low') sorted.sort((a,b) => b.price - a.price);
-      if (sortVal === 'rating') sorted.sort((a,b) => b.rating - a.rating);
-
+      if (val === 'low-high') sorted.sort((a,b) => a.price - b.price);
+      if (val === 'high-low') sorted.sort((a,b) => b.price - a.price);
+      if (val === 'rating') sorted.sort((a,b) => b.rating - a.rating);
       renderProducts(sorted);
     }
 
     // Cart Management
     function addToCart(id) {
-      const prod = productsData.find(p => p.id === id);
-      cart.push(prod);
+      cart.push(productsData.find(p => p.id === id));
       updateCartUI();
     }
-
     function updateCartUI() {
       document.getElementById('cart-count').innerText = cart.length;
       const container = document.getElementById('cart-items-container');
@@ -383,7 +544,6 @@
 
       const total = cart.reduce((sum, item) => sum + item.price, 0);
       totalEl.innerText = `$${total.toFixed(2)} USD`;
-
       container.innerHTML = cart.map((item, idx) => `
         <div class="flex items-center space-x-3 p-2 border rounded-xl bg-gray-50">
           <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg">
@@ -395,30 +555,18 @@
         </div>
       `).join('');
     }
+    function removeFromCart(i) { cart.splice(i, 1); updateCartUI(); }
+    function toggleCartDrawer() { document.getElementById('cart-drawer').classList.toggle('hidden'); }
 
-    function removeFromCart(index) {
-      cart.splice(index, 1);
-      updateCartUI();
-    }
-
-    function toggleCartDrawer() {
-      document.getElementById('cart-drawer').classList.toggle('hidden');
-    }
-
-    // Wishlist Management
+    // Wishlist
     function toggleWishlist(id) {
       const idx = wishlist.findIndex(w => w.id === id);
-      if (idx > -1) {
-        wishlist.splice(idx, 1);
-      } else {
-        const prod = productsData.find(p => p.id === id);
-        wishlist.push(prod);
-      }
+      if (idx > -1) wishlist.splice(idx, 1);
+      else wishlist.push(productsData.find(p => p.id === id));
       document.getElementById('wishlist-count').innerText = wishlist.length;
       renderProducts(currentProducts);
       updateWishlistUI();
     }
-
     function updateWishlistUI() {
       const container = document.getElementById('wishlist-items-container');
       if (wishlist.length === 0) {
@@ -436,43 +584,26 @@
         </div>
       `).join('');
     }
+    function toggleWishlistDrawer() { document.getElementById('wishlist-drawer').classList.toggle('hidden'); }
 
-    function toggleWishlistDrawer() {
-      document.getElementById('wishlist-drawer').classList.toggle('hidden');
-    }
-
-    // Chatbot Functions
-    function toggleChatbot() {
-      document.getElementById('chat-window').classList.toggle('hidden');
-    }
-
+    // Chatbot
+    function toggleChatbot() { document.getElementById('chat-window').classList.toggle('hidden'); }
     function handleChatSubmit(e) {
       e.preventDefault();
       const input = document.getElementById('chat-input');
       const messages = document.getElementById('chat-messages');
-
       if (!input.value.trim()) return;
 
-      messages.innerHTML += `
-        <div class="bg-indigo-600 text-white p-2.5 rounded-xl border max-w-[85%] ml-auto text-xs">
-          ${input.value}
-        </div>
-      `;
-
-      const userMsg = input.value;
+      messages.innerHTML += `<div class="bg-indigo-600 text-white p-2.5 rounded-xl max-w-[85%] ml-auto text-xs">${input.value}</div>`;
+      const txt = input.value;
       input.value = '';
 
       setTimeout(() => {
-        messages.innerHTML += `
-          <div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700 text-xs">
-            Thank you for reaching out regarding "${userMsg}". An online support agent will follow up shortly!
-          </div>
-        `;
+        messages.innerHTML += `<div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700 text-xs">Thank you for asking about "${txt}". A representative will reply shortly!</div>`;
         messages.scrollTop = messages.scrollHeight;
-      }, 800);
+      }, 700);
     }
 
-    // Initial Render
     renderProducts(currentProducts);
   </script>
 </body>
