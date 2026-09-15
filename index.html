@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZimMarket | Free Marketplace</title>
+  <title>ZimMarket | Secure Free & Pro Marketplace</title>
   
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,9 +21,9 @@
   <!-- ================= 1. TOP UTILITY BAR ================= -->
   <div class="bg-black text-white text-[11px] py-1.5 px-4 flex justify-between items-center border-b border-gray-800">
     <div class="flex items-center space-x-4">
-      <span>🚚 Free Shipping on Orders Over $30</span>
+      <span>🚚 Secure Escrow Protection on All Orders</span>
       <span class="hidden md:inline text-gray-400">|</span>
-      <span class="hidden md:inline">⚡ Completely Free Marketplace Access</span>
+      <span class="hidden md:inline">⚡ ZimMarket 10% Guaranteed Safe Trade</span>
     </div>
     
     <div class="flex items-center space-x-4">
@@ -34,7 +34,7 @@
 
       <button onclick="toggleChatbot()" class="flex items-center space-x-1 hover:text-amber-400 transition text-xs">
         <i data-lucide="headphones" class="w-3.5 h-3.5"></i>
-        <span>Customer Service</span>
+        <span>Customer Support</span>
       </button>
     </div>
   </div>
@@ -57,7 +57,7 @@
             type="text" 
             id="search-input" 
             onkeyup="handleSearch()"
-            placeholder="Search products, brands, or sellers..." 
+            placeholder="Search products, brands, or verified sellers..." 
             class="w-full px-4 py-2 text-xs bg-transparent focus:outline-none"
           >
           <button onclick="handleSearch()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 flex items-center justify-center transition">
@@ -86,21 +86,24 @@
               <button onclick="openAuthModal('register')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">Register Account</button>
             </div>
 
-            <div class="py-2 border-b border-gray-100">
-              <!-- BECOME A SELLER BUTTON -->
+            <div class="py-2 border-b border-gray-100 space-y-2">
+              <!-- BECOME A SELLER BUTTON -> REDIRECTS TO SELLER PORTAL PAGE -->
               <button onclick="openSellerPortal()" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-black py-2 rounded-lg text-xs flex items-center justify-center space-x-1.5 transition shadow-sm">
                 <i data-lucide="store" class="w-4 h-4"></i>
                 <span>Become a Seller</span>
               </button>
+              <!-- BUYER SUBSCRIPTION BUTTON -->
+              <button onclick="openBuyerSubModal()" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center space-x-1 transition">
+                <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                <span>Buyer Ad-Free Pass ($2/mo)</span>
+              </button>
             </div>
             
             <ul class="py-2 text-xs space-y-1 text-gray-700">
-              <li><button onclick="showSection('orders')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="package" class="w-4 h-4 text-indigo-600"></i><span>My Orders</span></button></li>
+              <li><button onclick="showSection('orders')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="package" class="w-4 h-4 text-indigo-600"></i><span>My Orders & Escrow</span></button></li>
               <li><button onclick="showSection('messages')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="message-square" class="w-4 h-4 text-indigo-600"></i><span>My Messages</span></button></li>
+              <li><button onclick="showSection('refunds')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="rotate-ccw" class="w-4 h-4 text-indigo-600"></i><span>Refund Policy</span></button></li>
               <li><button onclick="showSection('coupons')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="ticket" class="w-4 h-4 text-indigo-600"></i><span>My Coupons</span></button></li>
-              <li><button onclick="showSection('points')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="coins" class="w-4 h-4 text-indigo-600"></i><span>My Points</span></button></li>
-              <li><button onclick="showSection('recently_viewed')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="clock" class="w-4 h-4 text-indigo-600"></i><span>Recently Viewed</span></button></li>
-              <li><button onclick="showSection('services')" class="w-full flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50 border-t mt-1 pt-2"><i data-lucide="grid" class="w-4 h-4 text-indigo-600"></i><span>More Services</span></button></li>
             </ul>
           </div>
         </div>
@@ -132,12 +135,10 @@
           <button onclick="filterCategory('Womens Clothing')" class="text-gray-600 hover:text-indigo-600">Women's Clothing</button>
           <button onclick="filterCategory('Kids')" class="text-gray-600 hover:text-indigo-600">Kids</button>
           <button onclick="filterCategory('Mens Clothing')" class="text-gray-600 hover:text-indigo-600">Men's Clothing</button>
-          <button onclick="filterCategory('Underwear & Sleepwear')" class="text-gray-600 hover:text-indigo-600">Underwear & Sleepwear</button>
           <button onclick="filterCategory('Shoes')" class="text-gray-600 hover:text-indigo-600">Shoes</button>
           <button onclick="filterCategory('Home & Living')" class="text-gray-600 hover:text-indigo-600">Home & Living</button>
           <button onclick="filterCategory('Jewelry')" class="text-gray-600 hover:text-indigo-600">Jewelry</button>
           <button onclick="filterCategory('Accessories')" class="text-gray-600 hover:text-indigo-600">Accessories</button>
-          <button onclick="filterCategory('Sarees')" class="text-gray-600 hover:text-indigo-600">Sarees</button>
           <button onclick="filterCategory('Beauty')" class="text-gray-600 hover:text-indigo-600">Beauty</button>
         </div>
 
@@ -151,6 +152,18 @@
     
     <!-- Home Marketplace View -->
     <div id="home-view">
+      <!-- Buyer Ad-Free Banner (Hidden if subscribed) -->
+      <div id="buyer-promo-banner" class="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white p-4 rounded-2xl mb-6 flex flex-col sm:flex-row items-center justify-between shadow-lg">
+        <div class="mb-3 sm:mb-0">
+          <span class="bg-amber-400 text-black text-[10px] font-extrabold px-2 py-0.5 rounded uppercase">Exclusive Offer</span>
+          <h2 class="text-base font-extrabold mt-1">Upgrade to Buyer Ad-Free Pass ($2.00/mo)</h2>
+          <p class="text-xs text-indigo-200">Enjoy zero promotional interruptions, priority customer dispatch, and exclusive buyer cashback rewards.</p>
+        </div>
+        <button onclick="openBuyerSubModal()" class="bg-amber-400 hover:bg-amber-500 text-black font-extrabold px-4 py-2 rounded-xl text-xs transition shadow">
+          Get Ad-Free Pass
+        </button>
+      </div>
+
       <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-200 mb-6 shadow-sm">
         <div class="flex items-center space-x-2 text-xs font-bold text-gray-700">
           <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
@@ -164,138 +177,221 @@
         </div>
 
         <div class="text-xs text-gray-500">
-          Showing <span id="product-count" class="font-bold text-black">0</span> verified items
+          Showing <span id="product-count" class="font-bold text-black">0</span> escrow-protected items
         </div>
       </div>
 
       <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
     </div>
 
-    <!-- Product Detail View (Expanded Item View with Reviews & Similar Products) -->
+    <!-- Product Detail View (Expanded with Reviews, Supplier Name, Colors, Sizes & Similar Products) -->
     <div id="product-detail-view" class="hidden bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
       <button onclick="showSection('home')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg font-bold mb-6 flex items-center space-x-1 w-max">
         <i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back to Products</span>
       </button>
 
-      <div id="product-detail-content">
-        <!-- Dynamically populated detail data & reviews -->
-      </div>
+      <div id="product-detail-content"></div>
     </div>
 
-    <!-- Account Sub-View Container -->
+    <!-- Account Sub-View Container (Orders, Escrow status, Refund Policy) -->
     <div id="account-view" class="hidden bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
       <div class="flex items-center justify-between border-b pb-4 mb-4">
         <h2 id="view-title" class="text-xl font-extrabold text-gray-900">Account Section</h2>
         <button onclick="showSection('home')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg font-bold">← Back to Shopping</button>
       </div>
-      <div id="view-body" class="text-xs text-gray-600"></div>
+      <div id="view-body" class="text-xs text-gray-600 space-y-4"></div>
     </div>
   </main>
 
-  <!-- ================= 5. SELLER PORTAL MODAL (WITH PRODUCT FILE UPLOAD) ================= -->
-  <div id="seller-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scroll p-6 relative">
-      <button onclick="closeSellerPortal()" class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
-
-      <div class="text-center max-w-lg mx-auto mb-6">
-        <span class="text-indigo-600 font-bold text-xs uppercase tracking-wider">Merchant Portal</span>
-        <h2 class="text-2xl font-black text-gray-900 mt-1">Upload & List Your Products</h2>
-        <p class="text-xs text-gray-500 mt-1">Add your product files, images, and inventory to list them instantly on ZimMarket.</p>
+  <!-- ================= 5. SELLER PORTAL PAGE / MODAL WITH 3 SUBSCRIPTION TIERS & STORE BUILDER ================= -->
+  <div id="seller-portal-page" class="fixed inset-0 bg-white z-50 hidden overflow-y-auto custom-scroll p-4 sm:p-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex justify-between items-center border-b pb-4 mb-6">
+        <div>
+          <span class="text-indigo-600 font-bold text-xs uppercase tracking-wider">ZimMarket Merchant Center</span>
+          <h1 class="text-2xl font-black text-gray-900">Seller Portal & Store Builder</h1>
+        </div>
+        <button onclick="closeSellerPortal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-xl text-xs">✕ Exit to Marketplace</button>
       </div>
 
-      <form onsubmit="handleProductUpload(event)" class="space-y-4 text-xs">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block font-bold text-gray-700 mb-1">Store / Supplier Name</label>
-            <input type="text" id="seller-store-name" required placeholder="e.g. Harare Trends" class="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+      <!-- STEP 1: SUBSCRIPTION SELECTION -->
+      <div id="seller-step-sub" class="mb-8">
+        <h2 class="text-sm font-extrabold text-gray-900 mb-3">1. Choose Your Merchant Subscription Plan</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Free Tier -->
+          <div class="border-2 border-gray-200 rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-600 transition cursor-pointer" onclick="selectSellerPlan('Free', 0, this)">
+            <div>
+              <span class="text-xs font-bold text-gray-500">Standard Starter</span>
+              <h3 class="text-lg font-black text-gray-900 mt-1">Free Tier</h3>
+              <p class="text-2xl font-black text-indigo-600 mt-2">$0 <span class="text-xs font-normal text-gray-500">/mo</span></p>
+              <ul class="text-xs text-gray-600 space-y-2 mt-4">
+                <li>✓ List up to 10 products</li>
+                <li>✓ Standard Escrow Protection</li>
+                <li>✓ 10% Platform Fee per sale</li>
+              </ul>
+            </div>
+            <button class="w-full mt-6 bg-gray-100 text-gray-800 font-bold py-2 rounded-xl text-xs">Select Plan</button>
           </div>
-          <div>
-            <label class="block font-bold text-gray-700 mb-1">Product Title</label>
-            <input type="text" id="seller-prod-title" required placeholder="e.g. Linen Summer Shirt" class="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+
+          <!-- Basic Tier ($3.99) -->
+          <div class="border-2 border-gray-200 rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-600 transition cursor-pointer" onclick="selectSellerPlan('Basic', 3.99, this)">
+            <div>
+              <span class="text-xs font-bold text-indigo-600">Growth Merchant</span>
+              <h3 class="text-lg font-black text-gray-900 mt-1">Basic Plan</h3>
+              <p class="text-2xl font-black text-indigo-600 mt-2">$3.99 <span class="text-xs font-normal text-gray-500">/mo</span></p>
+              <ul class="text-xs text-gray-600 space-y-2 mt-4">
+                <li>✓ Unlimited product uploads</li>
+                <li>✓ Priority Escrow Clearance</li>
+                <li>✓ Reduced 8% Platform Fee</li>
+              </ul>
+            </div>
+            <button class="w-full mt-6 bg-indigo-600 text-white font-bold py-2 rounded-xl text-xs">Select Plan</button>
+          </div>
+
+          <!-- Pro Tier ($19.99 - Includes Everything) -->
+          <div class="border-2 border-amber-500 bg-amber-50/30 rounded-2xl p-5 flex flex-col justify-between relative shadow-sm" onclick="selectSellerPlan('Pro', 19.99, this)">
+            <span class="absolute -top-2.5 right-4 bg-amber-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase">All Inclusive</span>
+            <div>
+              <span class="text-xs font-bold text-amber-600">Enterprise Pro</span>
+              <h3 class="text-lg font-black text-gray-900 mt-1">Pro Plan</h3>
+              <p class="text-2xl font-black text-indigo-600 mt-2">$19.99 <span class="text-xs font-normal text-gray-500">/mo</span></p>
+              <ul class="text-xs text-gray-600 space-y-2 mt-4">
+                <li>✓ Includes Everything (All tools)</li>
+                <li>✓ Zero Platform Commission (0%)</li>
+                <li>✓ Verified Badge & Top Placement</li>
+              </ul>
+            </div>
+            <button class="w-full mt-6 bg-black text-white font-bold py-2 rounded-xl text-xs">Select Plan</button>
           </div>
         </div>
+      </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block font-bold text-gray-700 mb-1">Category</label>
-            <select id="seller-prod-category" class="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
-              <option value="Womens Clothing">Women's Clothing</option>
-              <option value="Mens Clothing">Men's Clothing</option>
-              <option value="Kids">Kids</option>
-              <option value="Shoes">Shoes</option>
-              <option value="Home & Living">Home & Living</option>
-              <option value="Jewelry">Jewelry</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Beauty">Beauty</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-bold text-gray-700 mb-1">Price (USD $)</label>
-            <input type="number" step="0.01" id="seller-prod-price" required placeholder="24.99" class="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
-          </div>
-        </div>
+      <!-- STEP 2: STORE BUILDER & PRODUCT UPLOAD FORM -->
+      <div id="seller-step-form" class="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+        <h2 class="text-sm font-extrabold text-gray-900 mb-4 flex items-center justify-between">
+          <span>2. Build Your Store & Upload Products</span>
+          <span id="selected-plan-badge" class="text-xs bg-indigo-600 text-white px-3 py-1 rounded-full">Selected Plan: Free ($0)</span>
+        </h2>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block font-bold text-gray-700 mb-1">Available Colors (comma separated)</label>
-            <input type="text" id="seller-prod-colors" placeholder="Red, Blue, Black" value="Black, White" class="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+        <form onsubmit="handleSellerStorePublish(event)" class="space-y-4 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Brand / Store Name</label>
+              <input type="text" id="store-brand-name" required placeholder="e.g. Bulawayo Elite Styles" class="w-full bg-white border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+            </div>
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Supplier Contact Details (Phone / Email)</label>
+              <input type="text" id="store-contact" required placeholder="+263 77 000 0000" class="w-full bg-white border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+            </div>
           </div>
-          <div>
-            <label class="block font-bold text-gray-700 mb-1">Available Sizes (comma separated)</label>
-            <input type="text" id="seller-prod-sizes" placeholder="S, M, L, XL" value="S, M, L" class="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
-          </div>
-        </div>
 
-        <div>
-          <label class="block font-bold text-gray-700 mb-1">Upload Product Image / File</label>
-          <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center bg-gray-50 hover:bg-gray-100 transition">
-            <input type="file" id="seller-prod-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-            <p class="text-[10px] text-gray-400 mt-1">Upload high-resolution item image (PNG, JPG)</p>
+          <div class="border-t pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Product Title</label>
+              <input type="text" id="store-prod-title" required placeholder="e.g. Handmade Leather Loafers" class="w-full bg-white border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+            </div>
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Category</label>
+              <select id="store-prod-category" class="w-full bg-white border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+                <option value="Womens Clothing">Women's Clothing</option>
+                <option value="Mens Clothing">Men's Clothing</option>
+                <option value="Kids">Kids</option>
+                <option value="Shoes">Shoes</option>
+                <option value="Home & Living">Home & Living</option>
+                <option value="Jewelry">Jewelry</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Beauty">Beauty</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md mt-4">
-          Publish Product to Marketplace
-        </button>
-      </form>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Price (USD $)</label>
+              <input type="number" step="0.01" id="store-prod-price" required placeholder="35.00" class="w-full bg-white border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+            </div>
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Available Colors</label>
+              <input type="text" id="store-prod-colors" placeholder="Brown, Black" value="Brown, Black" class="w-full bg-white border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+            </div>
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Available Sizes</label>
+              <input type="text" id="store-prod-sizes" placeholder="7, 8, 9, 10" value="8, 9, 10" class="w-full bg-white border p-2.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">Upload Product Files / Images</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center bg-white">
+              <input type="file" id="store-prod-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700">
+              <p class="text-[10px] text-gray-400 mt-1">Upload high-res product photos for your storefront catalog</p>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md mt-4">
+            Launch Store & Publish Product
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
-  <!-- ================= 6. CHECKOUT PAYMENT MODAL ================= -->
+  <!-- ================= 6. CHECKOUT WITH ESCROW & 10% FEE BREAKDOWN ================= -->
   <div id="checkout-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
       <button onclick="closeCheckoutModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
 
-      <h3 class="font-extrabold text-lg text-gray-900 mb-2">Complete Checkout</h3>
-      <p class="text-xs text-gray-500 mb-4">Select your payment method to finalize the order.</p>
+      <h3 class="font-extrabold text-lg text-gray-900 mb-1">Secure Escrow Checkout</h3>
+      <p class="text-xs text-gray-500 mb-4">Funds are safely held by ZimMarket and released to the supplier only after successful delivery.</p>
 
-      <div class="space-y-3 mb-6">
-        <label class="flex items-center space-x-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+      <div class="bg-indigo-50 p-3 rounded-xl mb-4 space-y-1 text-xs">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Subtotal:</span>
+          <span id="escrow-subtotal" class="font-bold">$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">ZimMarket Platform Protection (10%):</span>
+          <span id="escrow-fee" class="font-bold text-indigo-600">$0.00</span>
+        </div>
+        <div class="border-t pt-1 flex justify-between font-black text-sm">
+          <span>Total Escrow Payable:</span>
+          <span id="checkout-total-amount" class="text-gray-900">$0.00</span>
+        </div>
+      </div>
+
+      <div class="space-y-2 mb-4 text-xs">
+        <label class="flex items-center space-x-3 p-2.5 border rounded-xl cursor-pointer hover:bg-gray-50">
           <input type="radio" name="payment" value="card" checked class="text-indigo-600">
-          <span class="text-xs font-bold">Debit / Credit Card (Visa/Mastercard)</span>
+          <span class="font-bold">Debit / Credit Card (Visa/Mastercard)</span>
         </label>
-        <label class="flex items-center space-x-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
+        <label class="flex items-center space-x-3 p-2.5 border rounded-xl cursor-pointer hover:bg-gray-50">
           <input type="radio" name="payment" value="ecocash" class="text-indigo-600">
-          <span class="text-xs font-bold">EcoCash / Mobile Money</span>
-        </label>
-        <label class="flex items-center space-x-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50">
-          <input type="radio" name="payment" value="paypal" class="text-indigo-600">
-          <span class="text-xs font-bold">PayPal</span>
+          <span class="font-bold">EcoCash / Mobile Money</span>
         </label>
       </div>
 
-      <div class="border-t pt-3 flex justify-between font-bold text-sm mb-4">
-        <span>Total Payable:</span>
-        <span id="checkout-total-amount" class="text-indigo-600">$0.00</span>
-      </div>
-
-      <button onclick="processPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
-        Pay Now
+      <button onclick="processEscrowPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
+        Fund Escrow & Place Order
       </button>
     </div>
   </div>
 
-  <!-- ================= 7. AUTHENTICATION MODAL ================= -->
+  <!-- ================= 7. BUYER SUBSCRIPTION MODAL ($2/MO AD-FREE) ================= -->
+  <div id="buyer-sub-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+      <button onclick="closeBuyerSubModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
+      <div class="text-center mb-4">
+        <span class="bg-indigo-100 text-indigo-700 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Buyer Membership</span>
+        <h3 class="font-extrabold text-xl text-gray-900 mt-2">Ad-Free & Exclusive Pass</h3>
+        <p class="text-xs text-gray-500 mt-1">Get an ad-free browsing experience plus priority support and exclusive buyer discounts for just <b class="text-indigo-600">$2.00 / month</b>.</p>
+      </div>
+      <button onclick="subscribeBuyerPass()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
+        Subscribe for $2.00 / Month
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= 8. AUTHENTICATION MODAL ================= -->
   <div id="auth-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 relative">
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black font-bold">✕</button>
@@ -317,7 +413,7 @@
     </div>
   </div>
 
-  <!-- ================= 8. DRAWERS (CART & WISHLIST) ================= -->
+  <!-- ================= 9. DRAWERS (CART & WISHLIST) ================= -->
   <div id="cart-drawer" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
     <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-4">
       <div>
@@ -337,7 +433,7 @@
           <span id="cart-total" class="text-indigo-600">$0.00 USD</span>
         </div>
         <button onclick="openCheckoutModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
-          Proceed to Checkout
+          Proceed to Escrow Checkout
         </button>
       </div>
     </div>
@@ -358,7 +454,7 @@
     </div>
   </div>
 
-  <!-- ================= 9. CHATBOT WIDGET ================= -->
+  <!-- ================= 10. CHATBOT WIDGET ================= -->
   <div id="chatbot-widget" class="fixed bottom-4 right-4 z-50">
     <button onclick="toggleChatbot()" class="bg-indigo-600 hover:bg-indigo-700 text-white p-3.5 rounded-full shadow-2xl flex items-center space-x-2">
       <i data-lucide="message-circle" class="w-6 h-6"></i>
@@ -370,7 +466,7 @@
         <div class="flex items-center space-x-2">
           <i data-lucide="bot" class="w-5 h-5"></i>
           <div>
-            <h4 class="font-bold text-xs">Customer Assistant</h4>
+            <h4 class="font-bold text-xs">ZimMarket Escrow Support</h4>
             <span class="text-[9px] text-indigo-200">Online 24/7</span>
           </div>
         </div>
@@ -379,7 +475,7 @@
 
       <div id="chat-messages" class="flex-1 p-3 overflow-y-auto custom-scroll space-y-2 text-xs bg-gray-50">
         <div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700">
-          Hello! 👋 Welcome to ZimMarket. How can I help you today?
+          Hello! 👋 Welcome to ZimMarket. All trades are protected by escrow holding until successful delivery. How can I help?
         </div>
       </div>
 
@@ -395,14 +491,10 @@
     lucide.createIcons();
 
     const productsData = [
-      { id: 1, title: "Floral Summer Chiffon Dress", price: 18.99, category: "Womens Clothing", rating: 4.8, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400", seller: "Aeterna Apparel", colors: ["Red", "Blue", "Yellow"], sizes: ["S", "M", "L", "XL"], reviewsCount: 142, reviews: [{user: "Sarah M.", rating: 5, comment: "Absolutely gorgeous dress! Fits like a glove."}, {user: "Blessing K.", rating: 4, comment: "Good quality fabric, vibrant colors."}] },
-      { id: 2, title: "Classic Men's Slim Fit Jacket", price: 42.00, category: "Mens Clothing", rating: 4.6, image: "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=400", seller: "Rich Suiting", colors: ["Black", "Charcoal", "Navy"], sizes: ["M", "L", "XL"], reviewsCount: 89, reviews: [{user: "Tendai T.", rating: 5, comment: "Very professional finish. Excellent value."}] },
-      { id: 3, title: "Kids Denim dungarees Set", price: 15.50, category: "Kids", rating: 4.9, image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400", seller: "Junior Trends", colors: ["Blue Denim", "Light Wash"], sizes: ["3-4Y", "5-6Y", "7-8Y"], reviewsCount: 56, reviews: [{user: "Chipo R.", rating: 5, comment: "Super cute and durable material for kids."}] },
-      { id: 4, title: "Leather Casual Sneakers", price: 34.99, category: "Shoes", rating: 4.7, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", seller: "Footwear Co.", colors: ["White", "Black", "Tan"], sizes: ["US 7", "US 8", "US 9", "US 10"], reviewsCount: 210, reviews: [{user: "Mark D.", rating: 4, comment: "Comfortable for everyday walking."}] },
-      { id: 5, title: "Gold Plated Pendant Necklace", price: 12.00, category: "Jewelry", rating: 4.5, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400", seller: "FrameForge", colors: ["Gold", "Silver", "Rose Gold"], sizes: ["Standard"], reviewsCount: 77, reviews: [{user: "Anesu N.", rating: 5, comment: "Shines brightly, great gift item."}] },
-      { id: 6, title: "Traditional Designer Saree", price: 55.00, category: "Sarees", rating: 5.0, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", seller: "Royal Attire", colors: ["Maroon", "Emerald", "Royal Blue"], sizes: ["Free Size"], reviewsCount: 34, reviews: [{user: "Priya S.", rating: 5, comment: "Exquisite embroidery work."}] },
-      { id: 7, title: "Satin Silk Pajama Set", price: 22.50, category: "Underwear & Sleepwear", rating: 4.4, image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400", seller: "Cozy Night", colors: ["Pink", "Champagne", "Black"], sizes: ["S", "M", "L"], reviewsCount: 63, reviews: [{user: "Rudo M.", rating: 4, comment: "So soft and comfortable to sleep in."}] },
-      { id: 8, title: "Hydrating Facial Serum", price: 14.20, category: "Beauty", rating: 4.9, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400", seller: "Glow Essentials", colors: ["Standard"], sizes: ["50ml", "100ml"], reviewsCount: 198, reviews: [{user: "Kundai Z.", rating: 5, comment: "Leaves skin glowing all day."}] }
+      { id: 1, title: "Floral Summer Chiffon Dress", price: 18.99, category: "Womens Clothing", rating: 4.8, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400", seller: "Aeterna Apparel", contact: "+263 77 111 2222", colors: ["Red", "Blue", "Yellow"], sizes: ["S", "M", "L", "XL"], reviewsCount: 142, reviews: [{user: "Sarah M.", rating: 5, comment: "Gorgeous dress! Secure delivery."}] },
+      { id: 2, title: "Classic Men's Slim Fit Jacket", price: 42.00, category: "Mens Clothing", rating: 4.6, image: "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=400", seller: "Rich Suiting", contact: "+263 71 333 4444", colors: ["Black", "Charcoal", "Navy"], sizes: ["M", "L", "XL"], reviewsCount: 89, reviews: [{user: "Tendai T.", rating: 5, comment: "Very professional finish."}] },
+      { id: 3, title: "Kids Denim dungarees Set", price: 15.50, category: "Kids", rating: 4.9, image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400", seller: "Junior Trends", contact: "+263 78 555 6666", colors: ["Blue Denim", "Light Wash"], sizes: ["3-4Y", "5-6Y", "7-8Y"], reviewsCount: 56, reviews: [{user: "Chipo R.", rating: 5, comment: "Durable material."}] },
+      { id: 4, title: "Leather Casual Sneakers", price: 34.99, category: "Shoes", rating: 4.7, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", seller: "Footwear Co.", contact: "+263 77 999 8888", colors: ["White", "Black", "Tan"], sizes: ["US 7", "US 8", "US 9", "US 10"], reviewsCount: 210, reviews: [{user: "Mark D.", rating: 4, comment: "Comfortable for walking."}] }
     ];
 
     let currentProducts = [...productsData];
@@ -411,6 +503,8 @@
     let recentlyViewed = [];
     let followedSuppliers = {};
     let currentUser = null;
+    let selectedPlan = { name: "Free", price: 0 };
+    let activeOrders = [];
 
     function renderProducts(items) {
       const grid = document.getElementById('product-grid');
@@ -428,6 +522,7 @@
             <button onclick="event.stopPropagation(); toggleWishlist(${p.id})" class="absolute top-2 right-2 bg-white/80 backdrop-blur p-1.5 rounded-full hover:bg-white text-gray-600 hover:text-rose-500 transition">
               <i data-lucide="heart" class="w-4 h-4 ${wishlist.some(w => w.id === p.id) ? 'fill-rose-500 text-rose-500' : ''}"></i>
             </button>
+            <span class="absolute bottom-2 left-2 bg-black/60 backdrop-blur text-white text-[9px] px-2 py-0.5 rounded font-bold">🔒 Escrow Protected</span>
           </div>
 
           <div class="p-3 flex-1 flex flex-col justify-between space-y-2">
@@ -453,7 +548,7 @@
       lucide.createIcons();
     }
 
-    // Expanded Product Details Page View with Reviews, Supplier Name, Colors, Sizes & Similar Products
+    // Expanded Product Details Page View with Reviews, Supplier Name, Contact Details, Colors, Sizes & Similar Products
     function openProductDetail(id) {
       const p = productsData.find(prod => prod.id === id);
       if (!p) return;
@@ -470,8 +565,6 @@
       detailView.classList.remove('hidden');
 
       const isFollowed = followedSuppliers[p.seller] || false;
-
-      // Find similar products based on category
       const similarProducts = productsData.filter(prod => prod.category === p.category && prod.id !== p.id).slice(0, 4);
 
       container.innerHTML = `
@@ -487,24 +580,30 @@
               
               <div class="flex items-center space-x-3 mt-2">
                 <span class="text-2xl font-black text-indigo-600">$${p.price.toFixed(2)}</span>
-                <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded">⭐ ${p.rating} / 5.0 (${p.reviewsCount} customer reviews)</span>
+                <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded">⭐ ${p.rating} / 5.0 (${p.reviewsCount} reviews)</span>
               </div>
             </div>
 
-            <!-- Supplier / Seller Card with Follow Option -->
-            <div class="flex items-center justify-between p-4 bg-gray-50 border rounded-xl">
-              <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-sm">
-                  ${p.seller.charAt(0)}
+            <!-- Supplier / Seller Card with Contact Details & Follow Option -->
+            <div class="p-4 bg-gray-50 border rounded-xl space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-sm">
+                    ${p.seller.charAt(0)}
+                  </div>
+                  <div>
+                    <span class="text-[10px] text-gray-400 block leading-none">Verified Supplier</span>
+                    <h4 class="text-xs font-extrabold text-gray-900">${p.seller}</h4>
+                  </div>
                 </div>
-                <div>
-                  <span class="text-[10px] text-gray-400 block leading-none">Verified Supplier / Seller</span>
-                  <h4 class="text-xs font-extrabold text-gray-900">${p.seller}</h4>
-                </div>
+                <button onclick="toggleFollowSupplier('${p.seller}')" id="follow-btn-${p.seller}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${isFollowed ? 'bg-gray-200 text-gray-700' : 'bg-black text-white hover:bg-gray-800'}">
+                  ${isFollowed ? '✓ Following' : '+ Follow'}
+                </button>
               </div>
-              <button onclick="toggleFollowSupplier('${p.seller}')" id="follow-btn-${p.seller}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${isFollowed ? 'bg-gray-200 text-gray-700' : 'bg-black text-white hover:bg-gray-800'}">
-                ${isFollowed ? '✓ Following' : '+ Follow Supplier'}
-              </button>
+              <div class="text-[11px] text-gray-600 border-t pt-2 flex items-center justify-between">
+                <span>📞 Contact: <b>${p.contact || '+263 77 000 0000'}</b></span>
+                <span class="text-emerald-600 font-bold">🛡️ Escrow Protected</span>
+              </div>
             </div>
 
             <!-- Colors Selection -->
@@ -530,7 +629,7 @@
                 <span>Add to Cart</span>
               </button>
               <button onclick="addToCart(${p.id}); openCheckoutModal();" class="flex-1 bg-black hover:bg-gray-800 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
-                Buy Now
+                Buy with Escrow
               </button>
             </div>
           </div>
@@ -582,10 +681,10 @@
       if (followedSuppliers[sellerName]) {
         btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-gray-200 text-gray-700";
         btn.innerText = "✓ Following";
-        alert(`You are now following ${sellerName}! You will receive updates on their latest products.`);
+        alert(`You are now following ${sellerName}!`);
       } else {
         btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-black text-white hover:bg-gray-800";
-        btn.innerText = "+ Follow Supplier";
+        btn.innerText = "+ Follow";
       }
     }
 
@@ -616,24 +715,42 @@
       homeView.classList.add('hidden');
       accountView.classList.remove('hidden');
 
-      const views = {
-        orders: { title: "My Orders", content: "<p>You have no active orders placed yet.</p>" },
-        messages: { title: "My Messages", content: "<p>Your inbox is clear. No seller inquiries active.</p>" },
-        coupons: { title: "My Coupons", content: "<p class='text-emerald-600 font-bold'>🎉 Active Coupon: WELCOME10 (10% OFF on first order)</p>" },
-        points: { title: "My Rewards Points", content: "<p>You currently have <b>150 ZimPoints</b> available ($1.50 USD value).</p>" },
-        recently_viewed: { 
-          title: "Recently Viewed", 
-          content: recentlyViewed.length ? 
-            `<div class='grid grid-cols-2 sm:grid-cols-4 gap-3'>${recentlyViewed.map(item => `<div class='border p-2 rounded-lg cursor-pointer' onclick='openProductDetail(${item.id})'><img src='${item.image}' class='w-full h-24 object-cover rounded mb-1'><p class='font-bold'>${item.title}</p></div>`).join('')}</div>` 
-            : "<p>You haven't viewed any specific items recently.</p>" 
-        },
-        services: { title: "More Services", content: "<p>Buyer Protection Policy • Dispute Resolution • Logistics Tracker</p>" }
-      };
-
-      if (views[sectionKey]) {
-        title.innerText = views[sectionKey].title;
-        body.innerHTML = views[sectionKey].content;
+      if (sectionKey === 'orders') {
+        title.innerText = "My Orders & Escrow Tracking";
+        if (activeOrders.length === 0) {
+          body.innerHTML = `<p>You have no active escrow orders placed yet.</p>`;
+        } else {
+          body.innerHTML = activeOrders.map((o, idx) => `
+            <div class="border p-4 rounded-xl bg-gray-50 space-y-2">
+              <div class="flex justify-between font-bold text-xs">
+                <span>Order #${1000 + idx} - ${o.item}</span>
+                <span class="text-indigo-600">$${o.total.toFixed(2)}</span>
+              </div>
+              <p class="text-gray-600">Status: <b class="text-amber-600">${o.status}</b> (Funds held securely in ZimMarket Escrow)</p>
+              ${o.status === 'Held in Escrow' ? `<button onclick="confirmDelivery(${idx})" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs">Confirm Delivery & Release Funds to Supplier</button>` : `<span class="text-emerald-700 font-bold">✓ Delivered & Released</span>`}
+            </div>
+          `).join('');
+        }
+      } else if (sectionKey === 'refunds') {
+        title.innerText = "ZimMarket Refund & Escrow Policy";
+        body.innerHTML = `
+          <div class="space-y-3 text-xs leading-relaxed">
+            <p><b>1. How Escrow Protects Buyers:</b> When you pay, ZimMarket retains 100% of the funds. The seller never receives your money upfront, eliminating non-delivery risk.</p>
+            <p><b>2. Platform Commission:</b> ZimMarket charges a standard 10% platform fee on transactions to maintain secure escrow and verification services.</p>
+            <p><b>3. Refund Eligibility:</b> If an item is not delivered within 7 business days, or arrives significantly damaged, buyers can request a 100% refund within 48 hours of inspection.</p>
+            <p><b>4. Fund Release:</b> Funds held in escrow are automatically processed and released to the supplier's payout account only after the buyer explicitly confirms successful receipt.</p>
+          </div>
+        `;
+      } else {
+        title.innerText = "My Messages";
+        body.innerHTML = `<p>Inbox clear. No active supplier disputes.</p>`;
       }
+    }
+
+    function confirmDelivery(idx) {
+      activeOrders[idx].status = "Delivered & Released";
+      alert("Delivery confirmed! Escrow funds have been successfully released to the supplier.");
+      showSection('orders');
     }
 
     function trackView(id) {
@@ -643,21 +760,32 @@
       }
     }
 
-    // Seller Portal & File Upload Logic
-    function openSellerPortal() { document.getElementById('seller-modal').classList.remove('hidden'); }
-    function closeSellerPortal() { document.getElementById('seller-modal').classList.add('hidden'); }
+    // Seller Portal & Subscription Plan Handlers
+    function openSellerPortal() { document.getElementById('seller-portal-page').classList.remove('hidden'); }
+    function closeSellerPortal() { document.getElementById('seller-portal-page').classList.add('hidden'); }
+
+    function selectSellerPlan(name, price, element) {
+      selectedPlan = { name, price };
+      document.querySelectorAll('#seller-step-sub > div > div').forEach(card => {
+        card.classList.remove('border-indigo-600', 'bg-indigo-50/20');
+      });
+      element.classList.add('border-indigo-600', 'bg-indigo-50/20');
+      document.getElementById('selected-plan-badge').innerText = `Selected Plan: ${name} ($${price}/mo)`;
+      alert(`You selected the ${name} Plan ($${price}/mo). Complete your store details below to launch!`);
+    }
     
-    function handleProductUpload(e) {
+    function handleSellerStorePublish(e) {
       e.preventDefault();
-      const storeName = document.getElementById('seller-store-name').value;
-      const title = document.getElementById('seller-prod-title').value;
-      const category = document.getElementById('seller-prod-category').value;
-      const price = parseFloat(document.getElementById('seller-prod-price').value);
-      const colors = document.getElementById('seller-prod-colors').value.split(',').map(s => s.trim());
-      const sizes = document.getElementById('seller-prod-sizes').value.split(',').map(s => s.trim());
+      const storeName = document.getElementById('store-brand-name').value;
+      const contact = document.getElementById('store-contact').value;
+      const title = document.getElementById('store-prod-title').value;
+      const category = document.getElementById('store-prod-category').value;
+      const price = parseFloat(document.getElementById('store-prod-price').value);
+      const colors = document.getElementById('store-prod-colors').value.split(',').map(s => s.trim());
+      const sizes = document.getElementById('store-prod-sizes').value.split(',').map(s => s.trim());
       
-      const fileInput = document.getElementById('seller-prod-file');
-      let imageURL = "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400"; // Default fallback
+      const fileInput = document.getElementById('store-prod-file');
+      let imageURL = "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400";
       
       if (fileInput.files && fileInput.files[0]) {
         imageURL = URL.createObjectURL(fileInput.files[0]);
@@ -671,17 +799,27 @@
         rating: 5.0,
         image: imageURL,
         seller: storeName,
+        contact: contact,
         colors: colors,
         sizes: sizes,
         reviewsCount: 1,
-        reviews: [{user: storeName, rating: 5, comment: "Direct listing from merchant storefront."}]
+        reviews: [{user: storeName, rating: 5, comment: "Direct merchant storefront listing."}]
       };
 
       productsData.unshift(newProduct);
       currentProducts = [...productsData];
       renderProducts(currentProducts);
       closeSellerPortal();
-      alert(`Success! Your product "${title}" has been published to ZimMarket.`);
+      alert(`Store "${storeName}" launched successfully under the ${selectedPlan.name} Plan! Your product is now live on ZimMarket.`);
+    }
+
+    // Buyer Subscription Pass
+    function openBuyerSubModal() { document.getElementById('buyer-sub-modal').classList.remove('hidden'); }
+    function closeBuyerSubModal() { document.getElementById('buyer-sub-modal').classList.add('hidden'); }
+    function subscribeBuyerPass() {
+      alert("Successfully subscribed to the Buyer Ad-Free & Exclusive Pass ($2.00/mo)! Promotional banners have been removed.");
+      document.getElementById('buyer-promo-banner').classList.add('hidden');
+      closeBuyerSubModal();
     }
 
     // Auth Modals & Signed-in State Update
@@ -696,11 +834,9 @@
       const email = document.getElementById('auth-email').value;
       currentUser = email;
       
-      // Update header greeting to show signed in user
       document.getElementById('account-greeting-sub').innerText = "Welcome back,";
       document.getElementById('account-greeting-main').innerHTML = `${email.split('@')[0]} <i data-lucide="chevron-down" class="inline w-3 h-3"></i>`;
       
-      // Update dropdown action buttons
       document.getElementById('auth-menu-actions').innerHTML = `
         <div class="px-2 py-1 text-xs font-bold text-indigo-600">Signed in as ${email}</div>
         <button onclick="handleSignOut()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2 rounded-lg text-xs transition">Sign Out</button>
@@ -708,7 +844,7 @@
 
       lucide.createIcons();
       closeAuthModal();
-      alert(`Successfully signed in as ${email}! Redirecting back to marketplace...`);
+      alert(`Welcome back, ${email}! Redirecting to marketplace...`);
       showSection('home');
     }
 
@@ -725,20 +861,32 @@
       alert("You have signed out successfully.");
     }
 
-    // Checkout Flow
+    // Escrow Checkout Flow
     function openCheckoutModal() {
       if (cart.length === 0) return alert("Your cart is empty!");
-      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+      const fee = subtotal * 0.10; // 10% ZimMarket platform fee
+      const total = subtotal + fee;
+
+      document.getElementById('escrow-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('escrow-fee').innerText = `$${fee.toFixed(2)}`;
       document.getElementById('checkout-total-amount').innerText = `$${total.toFixed(2)} USD`;
+      
       document.getElementById('cart-drawer').classList.add('hidden');
       document.getElementById('checkout-modal').classList.remove('hidden');
     }
     function closeCheckoutModal() { document.getElementById('checkout-modal').classList.add('hidden'); }
-    function processPayment() {
-      alert("Payment processed successfully! Your order has been placed.");
+    
+    function processEscrowPayment() {
+      const total = cart.reduce((sum, item) => sum + item.price, 0) * 1.10;
+      cart.forEach(item => {
+        activeOrders.push({ item: item.title, total: item.price * 1.10, status: "Held in Escrow" });
+      });
+      alert("Funds successfully deposited into ZimMarket Escrow! Suppliers have been notified to dispatch items.");
       cart = [];
       updateCartUI();
       closeCheckoutModal();
+      showSection('orders');
     }
 
     // Filtering & Categories
@@ -752,7 +900,7 @@
     }
     function handleSearch() {
       const q = document.getElementById('search-input').value.toLowerCase();
-      renderProducts(productsData.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)));
+      renderProducts(productsData.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q)));
     }
     function applySorting() {
       const val = document.getElementById('sort-select').value;
@@ -836,7 +984,7 @@
       input.value = '';
 
       setTimeout(() => {
-        messages.innerHTML += `<div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700 text-xs">Thank you for asking about "${txt}". A representative will reply shortly!</div>`;
+        messages.innerHTML += `<div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700 text-xs">Regarding "${txt}": ZimMarket holds all payments in escrow until delivery is confirmed by the buyer, taking a secure 10% platform fee.</div>`;
         messages.scrollTop = messages.scrollHeight;
       }, 700);
     }
