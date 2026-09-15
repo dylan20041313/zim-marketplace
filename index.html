@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZimMarketplace - Next-Gen Video Commerce</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .reel-container { scroll-snap-type: y mandatory; overflow-y: scroll; height: 80vh; }
+    .reel-card { scroll-snap-align: start; height: 80vh; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-black text-white p-4 flex justify-between items-center sticky top-0 z-50">
+    <h1 class="text-xl font-bold tracking-wide">ZimMarket</h1>
+    <div class="space-x-4">
+      <button onclick="switchTab('reels')" class="hover:text-amber-400 font-medium">Reels Feed</button>
+      <button onclick="switchTab('stores')" class="hover:text-amber-400 font-medium">Stores</button>
+      <button onclick="switchTab('pricing')" class="hover:text-amber-400 font-medium">Subscriptions</button>
+    </div>
+  </nav>
+
+  <!-- Section 1: Shoppable Reels Feed -->
+  <section id="reels-section" class="max-w-md mx-auto my-4">
+    <h2 class="text-lg font-semibold text-center mb-2">Live Shoppable Products</h2>
+    <div class="reel-container rounded-xl shadow-lg bg-black relative">
+      
+      <!-- Sample Video Item -->
+      <div class="reel-card relative flex items-center justify-center bg-gray-800 text-white">
+        <video class="w-full h-full object-cover" autoplay loop muted playsinline src="https://assets.mixkit.co/videos/preview/mixkit-shoes-in-a-store-42998-large.mp4"></video>
+        
+        <!-- Product Overlay -->
+        <div class="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md p-4 rounded-lg flex justify-between items-center">
+          <div>
+            <span class="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded">PRO SELLER</span>
+            <h3 class="font-bold text-white text-md mt-1">Sneaker Hub Harare</h3>
+            <p class="text-sm text-gray-300">Limited Edition Sneakers</p>
+            <p class="text-lg font-extrabold text-amber-400">$45.00 USD <span class="text-xs font-normal text-gray-400">(or EcoCash equivalent)</span></p>
+          </div>
+          <button onclick="triggerPaynowModal('Sneaker Hub', 45)" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg shadow">
+            Buy Now
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section 2: Subscriptions & Pricing Plans -->
+  <section id="pricing-section" class="hidden max-w-4xl mx-auto my-8 p-4">
+    <h2 class="text-2xl font-bold text-center mb-6">Choose Your Subscription Tier</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      
+      <!-- Buyer Subscription Card -->
+      <div class="bg-white p-6 rounded-xl shadow-md border-2 border-gray-200">
+        <h3 class="text-xl font-bold text-gray-800">Buyer Subscription</h3>
+        <p class="text-gray-500 text-sm mt-1">For regular marketplace shoppers</p>
+        <div class="mt-4">
+          <p class="text-3xl font-extrabold">$4.99 <span class="text-base font-normal text-gray-500">/ month</span></p>
+        </div>
+        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+          <li>✓ Exclusive Flash Sale Deals</li>
+          <li>✓ Zero Buyer Transaction Fees</li>
+          <li>✓ Priority Customer Support</li>
+        </ul>
+        <button class="mt-6 w-full bg-black text-white font-bold py-2 rounded-lg">Subscribe as Buyer</button>
+      </div>
+
+      <!-- Seller Subscription Card -->
+      <div class="bg-white p-6 rounded-xl shadow-md border-2 border-amber-500 relative">
+        <span class="absolute top-0 right-0 bg-amber-500 text-black font-bold text-xs px-3 py-1 rounded-bl-lg">RECOMMENDED</span>
+        <h3 class="text-xl font-bold text-gray-800">Pro Seller / Store Plan</h3>
+        <p class="text-gray-500 text-sm mt-1">For vendors, brands & freelancers</p>
+        <div class="mt-4">
+          <p class="text-3xl font-extrabold">$15.00 <span class="text-base font-normal text-gray-500">/ month</span></p>
+        </div>
+        <ul class="mt-4 space-y-2 text-sm text-gray-600">
+          <li>✓ Custom Shopify-Style Store Page</li>
+          <li>✓ Upload Unlimited Product Video Reels</li>
+          <li>✓ Lower Platform Commission Fee (4%)</li>
+          <li>✓ EcoCash & Visa Direct Settlement</li>
+        </ul>
+        <button class="mt-6 w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2 rounded-lg">Upgrade to Pro Store</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Payment Modal -->
+  <div id="paynow-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded-xl max-w-sm w-full">
+      <h3 class="text-lg font-bold mb-2">Checkout with Paynow</h3>
+      <p id="modal-item-details" class="text-sm text-gray-600 mb-4"></p>
+      
+      <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">EcoCash Phone Number</label>
+      <input type="text" id="ecocash-number" placeholder="077XXXXXXX" class="w-full p-2 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-green-500">
+      
+      <div class="flex space-x-2">
+        <button onclick="processMobilePayment()" class="w-full bg-green-600 text-white font-bold py-2 rounded">Pay EcoCash</button>
+        <button onclick="closePaynowModal()" class="w-full bg-gray-300 text-gray-700 font-bold py-2 rounded">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabName) {
+      document.getElementById('reels-section').classList.add('hidden');
+      document.getElementById('pricing-section').classList.add('hidden');
+
+      if (tabName === 'reels') document.getElementById('reels-section').classList.remove('hidden');
+      if (tabName === 'pricing') document.getElementById('pricing-section').classList.remove('hidden');
+    }
+
+    function triggerPaynowModal(itemTitle, price) {
+      document.getElementById('modal-item-details').innerText = `Item: ${itemTitle} | Total: $${price}.00 USD`;
+      document.getElementById('paynow-modal').classList.remove('hidden');
+    }
+
+    function closePaynowModal() {
+      document.getElementById('paynow-modal').classList.add('hidden');
+    }
+
+    function processMobilePayment() {
+      const phone = document.getElementById('ecocash-number').value;
+      if(!phone) { alert('Please enter a valid phone number'); return; }
+      alert(`Payment prompt sent to ${phone}. Check your phone to complete the PIN authorization.`);
+      closePaynowModal();
+    }
+  </script>
+</body>
+</html>
