@@ -146,7 +146,8 @@
 
   <!-- ================= 4. DYNAMIC CONTENT AREA ================= -->
   <main id="main-content" class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
-    <!-- Default Product Marketplace View -->
+    
+    <!-- Home Marketplace View -->
     <div id="home-view">
       <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-200 mb-6 shadow-sm">
         <div class="flex items-center space-x-2 text-xs font-bold text-gray-700">
@@ -166,6 +167,17 @@
       </div>
 
       <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+    </div>
+
+    <!-- Product Detail View (Expanded Item View) -->
+    <div id="product-detail-view" class="hidden bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <button onclick="showSection('home')" class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg font-bold mb-6 flex items-center space-x-1 w-max">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back to Products</span>
+      </button>
+
+      <div id="product-detail-content" class="grid md:grid-cols-2 gap-8">
+        <!-- Dynamically populated detail data -->
+      </div>
     </div>
 
     <!-- Account Sub-View Container -->
@@ -189,7 +201,6 @@
         <p class="text-xs text-gray-500 mt-1">Set up your storefront like Shopify, manage stock, and receive payouts globally.</p>
       </div>
 
-      <!-- Subscription Tiers -->
       <div class="grid md:grid-cols-3 gap-4 mb-8">
         <div class="border border-gray-200 rounded-xl p-4 flex flex-col justify-between hover:border-indigo-600 transition">
           <div>
@@ -369,20 +380,21 @@
     lucide.createIcons();
 
     const productsData = [
-      { id: 1, title: "Floral Summer Chiffon Dress", price: 18.99, category: "Womens Clothing", rating: 4.8, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400", seller: "Aeterna Apparel" },
-      { id: 2, title: "Classic Men's Slim Fit Jacket", price: 42.00, category: "Mens Clothing", rating: 4.6, image: "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=400", seller: "Rich Suiting" },
-      { id: 3, title: "Kids Denim dungarees Set", price: 15.50, category: "Kids", rating: 4.9, image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400", seller: "Junior Trends" },
-      { id: 4, title: "Leather Casual Sneakers", price: 34.99, category: "Shoes", rating: 4.7, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", seller: "Footwear Co." },
-      { id: 5, title: "Gold Plated Pendant Necklace", price: 12.00, category: "Jewelry", rating: 4.5, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400", seller: "FrameForge" },
-      { id: 6, title: "Traditional Designer Saree", price: 55.00, category: "Sarees", rating: 5.0, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", seller: "Royal Attire" },
-      { id: 7, title: "Satin Silk Pajama Set", price: 22.50, category: "Underwear & Sleepwear", rating: 4.4, image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400", seller: "Cozy Night" },
-      { id: 8, title: "Hydrating Facial Serum", price: 14.20, category: "Beauty", rating: 4.9, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400", seller: "Glow Essentials" }
+      { id: 1, title: "Floral Summer Chiffon Dress", price: 18.99, category: "Womens Clothing", rating: 4.8, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400", seller: "Aeterna Apparel", colors: ["Red", "Blue", "Yellow"], sizes: ["S", "M", "L", "XL"], reviewsCount: 142 },
+      { id: 2, title: "Classic Men's Slim Fit Jacket", price: 42.00, category: "Mens Clothing", rating: 4.6, image: "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=400", seller: "Rich Suiting", colors: ["Black", "Charcoal", "Navy"], sizes: ["M", "L", "XL"], reviewsCount: 89 },
+      { id: 3, title: "Kids Denim dungarees Set", price: 15.50, category: "Kids", rating: 4.9, image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400", seller: "Junior Trends", colors: ["Blue Denim", "Light Wash"], sizes: ["3-4Y", "5-6Y", "7-8Y"], reviewsCount: 56 },
+      { id: 4, title: "Leather Casual Sneakers", price: 34.99, category: "Shoes", rating: 4.7, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", seller: "Footwear Co.", colors: ["White", "Black", "Tan"], sizes: ["US 7", "US 8", "US 9", "US 10"], reviewsCount: 210 },
+      { id: 5, title: "Gold Plated Pendant Necklace", price: 12.00, category: "Jewelry", rating: 4.5, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400", seller: "FrameForge", colors: ["Gold", "Silver", "Rose Gold"], sizes: ["Standard"], reviewsCount: 77 },
+      { id: 6, title: "Traditional Designer Saree", price: 55.00, category: "Sarees", rating: 5.0, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", seller: "Royal Attire", colors: ["Maroon", "Emerald", "Royal Blue"], sizes: ["Free Size"], reviewsCount: 34 },
+      { id: 7, title: "Satin Silk Pajama Set", price: 22.50, category: "Underwear & Sleepwear", rating: 4.4, image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400", seller: "Cozy Night", colors: ["Pink", "Champagne", "Black"], sizes: ["S", "M", "L"], reviewsCount: 63 },
+      { id: 8, title: "Hydrating Facial Serum", price: 14.20, category: "Beauty", rating: 4.9, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400", seller: "Glow Essentials", colors: ["Standard"], sizes: ["50ml", "100ml"], reviewsCount: 198 }
     ];
 
     let currentProducts = [...productsData];
     let cart = [];
     let wishlist = [];
     let recentlyViewed = [];
+    let followedSuppliers = {};
 
     function renderProducts(items) {
       const grid = document.getElementById('product-grid');
@@ -394,8 +406,8 @@
       }
 
       grid.innerHTML = items.map(p => `
-        <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col justify-between group">
-          <div class="relative aspect-square overflow-hidden bg-gray-100 cursor-pointer" onclick="trackView(${p.id})">
+        <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col justify-between group cursor-pointer" onclick="openProductDetail(${p.id})">
+          <div class="relative aspect-square overflow-hidden bg-gray-100">
             <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             <button onclick="event.stopPropagation(); toggleWishlist(${p.id})" class="absolute top-2 right-2 bg-white/80 backdrop-blur p-1.5 rounded-full hover:bg-white text-gray-600 hover:text-rose-500 transition">
               <i data-lucide="heart" class="w-4 h-4 ${wishlist.some(w => w.id === p.id) ? 'fill-rose-500 text-rose-500' : ''}"></i>
@@ -411,10 +423,10 @@
             <div class="flex items-center justify-between pt-2 border-t border-gray-100">
               <div>
                 <span class="text-sm font-black text-gray-900">$${p.price.toFixed(2)}</span>
-                <span class="block text-[10px] text-amber-500 font-bold">⭐ ${p.rating}</span>
+                <span class="block text-[10px] text-amber-500 font-bold">⭐ ${p.rating} (${p.reviewsCount})</span>
               </div>
 
-              <button onclick="addToCart(${p.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition">
+              <button onclick="event.stopPropagation(); addToCart(${p.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition">
                 <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
               </button>
             </div>
@@ -425,12 +437,121 @@
       lucide.createIcons();
     }
 
+    // Expanded Product Details Page View
+    function openProductDetail(id) {
+      const p = productsData.find(prod => prod.id === id);
+      if (!p) return;
+
+      trackView(id);
+      
+      const detailView = document.getElementById('product-detail-view');
+      const homeView = document.getElementById('home-view');
+      const accountView = document.getElementById('account-view');
+      const container = document.getElementById('product-detail-content');
+
+      homeView.classList.add('hidden');
+      accountView.classList.add('hidden');
+      detailView.classList.remove('hidden');
+
+      const isFollowed = followedSuppliers[p.seller] || false;
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <div class="aspect-square rounded-2xl overflow-hidden border border-gray-200 bg-gray-50">
+            <img src="${p.image}" class="w-full h-full object-cover">
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div>
+            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md uppercase tracking-wider">${p.category}</span>
+            <h1 class="text-xl sm:text-2xl font-black text-gray-900 mt-2">${p.title}</h1>
+            
+            <div class="flex items-center space-x-3 mt-2">
+              <span class="text-2xl font-black text-indigo-600">$${p.price.toFixed(2)}</span>
+              <span class="text-xs font-bold text-amber-500 bg-amber-50 px-2 py-0.5 rounded">⭐ ${p.rating} / 5.0 (${p.reviewsCount} customer reviews)</span>
+            </div>
+          </div>
+
+          <!-- Supplier / Seller Card with Follow Option -->
+          <div class="flex items-center justify-between p-4 bg-gray-50 border rounded-xl">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-full bg-indigo-600 text-white font-black flex items-center justify-center text-sm">
+                ${p.seller.charAt(0)}
+              </div>
+              <div>
+                <span class="text-[10px] text-gray-400 block leading-none">Verified Supplier</span>
+                <h4 class="text-xs font-extrabold text-gray-900">${p.seller}</h4>
+              </div>
+            </div>
+            <button onclick="toggleFollowSupplier('${p.seller}')" id="follow-btn-${p.seller}" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${isFollowed ? 'bg-gray-200 text-gray-700' : 'bg-black text-white hover:bg-gray-800'}">
+              ${isFollowed ? '✓ Following' : '+ Follow Supplier'}
+            </button>
+          </div>
+
+          <!-- Colors Selection -->
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-2">Available Colors:</label>
+            <div class="flex flex-wrap gap-2">
+              ${p.colors.map((c, i) => `<button onclick="selectOption(this, 'color')" class="px-3 py-1.5 border rounded-lg text-xs font-bold ${i === 0 ? 'border-indigo-600 bg-indigo-50 text-indigo-600' : 'border-gray-200 text-gray-700'}">${c}</button>`).join('')}
+            </div>
+          </div>
+
+          <!-- Sizes Selection -->
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-2">Select Size:</label>
+            <div class="flex flex-wrap gap-2">
+              ${p.sizes.map((s, i) => `<button onclick="selectOption(this, 'size')" class="px-3 py-1.5 border rounded-lg text-xs font-bold ${i === 0 ? 'border-indigo-600 bg-indigo-50 text-indigo-600' : 'border-gray-200 text-gray-700'}">${s}</button>`).join('')}
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-3 pt-4 border-t">
+            <button onclick="addToCart(${p.id})" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md flex items-center justify-center space-x-2">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+              <span>Add to Cart</span>
+            </button>
+            <button onclick="addToCart(${p.id}); openCheckoutModal();" class="flex-1 bg-black hover:bg-gray-800 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
+              Buy Now
+            </button>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleFollowSupplier(sellerName) {
+      followedSuppliers[sellerName] = !followedSuppliers[sellerName];
+      const btn = document.getElementById(`follow-btn-${sellerName}`);
+      if (followedSuppliers[sellerName]) {
+        btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-gray-200 text-gray-700";
+        btn.innerText = "✓ Following";
+        alert(`You are now following ${sellerName}! You will receive updates on new product drops.`);
+      } else {
+        btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-black text-white hover:bg-gray-800";
+        btn.innerText = "+ Follow Supplier";
+      }
+    }
+
+    function selectOption(btn, type) {
+      const parent = btn.parentNode;
+      parent.querySelectorAll('button').forEach(b => {
+        b.className = "px-3 py-1.5 border rounded-lg text-xs font-bold border-gray-200 text-gray-700";
+      });
+      btn.className = "px-3 py-1.5 border rounded-lg text-xs font-bold border-indigo-600 bg-indigo-50 text-indigo-600";
+    }
+
     // Dynamic Navigation System
     function showSection(sectionKey) {
       const homeView = document.getElementById('home-view');
+      const detailView = document.getElementById('product-detail-view');
       const accountView = document.getElementById('account-view');
       const title = document.getElementById('view-title');
       const body = document.getElementById('view-body');
+
+      detailView.classList.add('hidden');
 
       if (sectionKey === 'home') {
         homeView.classList.remove('hidden');
@@ -449,7 +570,7 @@
         recently_viewed: { 
           title: "Recently Viewed", 
           content: recentlyViewed.length ? 
-            `<div class='grid grid-cols-2 sm:grid-cols-4 gap-3'>${recentlyViewed.map(item => `<div class='border p-2 rounded-lg'><img src='${item.image}' class='w-full h-24 object-cover rounded mb-1'><p class='font-bold'>${item.title}</p></div>`).join('')}</div>` 
+            `<div class='grid grid-cols-2 sm:grid-cols-4 gap-3'>${recentlyViewed.map(item => `<div class='border p-2 rounded-lg cursor-pointer' onclick='openProductDetail(${item.id})'><img src='${item.image}' class='w-full h-24 object-cover rounded mb-1'><p class='font-bold'>${item.title}</p></div>`).join('')}</div>` 
             : "<p>You haven't viewed any specific items recently.</p>" 
         },
         services: { title: "More Services", content: "<p>Buyer Protection Policy • Dispute Resolution • Logistics Tracker</p>" }
@@ -574,13 +695,13 @@
         return;
       }
       container.innerHTML = wishlist.map(item => `
-        <div class="flex items-center space-x-3 p-2 border rounded-xl bg-gray-50">
+        <div class="flex items-center space-x-3 p-2 border rounded-xl bg-gray-50 cursor-pointer" onclick="openProductDetail(${item.id})">
           <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg">
           <div class="flex-1">
             <h5 class="text-xs font-bold text-gray-800 line-clamp-1">${item.title}</h5>
             <span class="text-xs font-black text-indigo-600">$${item.price.toFixed(2)}</span>
           </div>
-          <button onclick="addToCart(${item.id})" class="bg-indigo-600 text-white text-[10px] px-2 py-1 rounded">Move to Cart</button>
+          <button onclick="event.stopPropagation(); addToCart(${item.id})" class="bg-indigo-600 text-white text-[10px] px-2 py-1 rounded">Add to Cart</button>
         </div>
       `).join('');
     }
