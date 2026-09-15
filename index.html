@@ -3,30 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZimMarketplace - Realtime Dual Portal</title>
+  <title>ZimMarket - Realtime Marketplace</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="https://via.placeholder.com/192.png?text=ZimMarket">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .reel-container { scroll-snap-type: y mandatory; overflow-y: scroll; height: 75vh; }
-    .reel-card { scroll-snap-align: start; height: 75vh; }
+    .reel-container { scroll-snap-type: y mandatory; overflow-y: scroll; height: 70vh; }
+    .reel-card { scroll-snap-align: start; height: 70vh; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
 
-  <!-- Main Navigation & Portal Switcher -->
-  <nav class="bg-black text-white p-4 flex flex-wrap justify-between items-center sticky top-0 z-50">
+  <!-- ================= WELCOME / LANDING PAGE ================= -->
+  <section id="welcome-screen" class="min-h-screen bg-gradient-to-br from-indigo-900 via-slate-900 to-black text-white flex flex-col justify-between p-6">
+    <div class="max-w-md mx-auto w-full text-center my-auto space-y-6">
+      <div class="inline-block bg-amber-500 text-black font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-lg">
+        Zimbabwe's Premier Video Marketplace
+      </div>
+      
+      <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+        Welcome to <span class="text-amber-400">ZimMarket</span>
+      </h1>
+      
+      <p class="text-gray-300 text-sm leading-relaxed">
+        Discover video reels of trending products, negotiate prices directly via EcoCash or WhatsApp, or launch your store to reach thousands of local Zimbabwean shoppers.
+      </p>
+
+      <div class="grid grid-cols-1 gap-3 pt-4">
+        <button onclick="enterPortal('buyer')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2">
+          <span>🛍️ Continue as Buyer</span>
+        </button>
+        <button onclick="enterPortal('seller')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3.5 px-4 rounded-xl shadow-lg transition text-sm flex items-center justify-center space-x-2">
+          <span>🏪 Continue as Seller</span>
+        </button>
+      </div>
+
+      <div class="pt-4 border-t border-gray-800 flex justify-center space-x-4 text-xs text-gray-400">
+        <button onclick="openAuthModal('login')" class="hover:text-amber-400 underline">Sign In to Existing Account</button>
+        <span>•</span>
+        <button onclick="switchTab('pricing')" class="hover:text-amber-400 underline">View Seller Plans</button>
+      </div>
+    </div>
+
+    <div class="text-center text-[10px] text-gray-500">
+      © 2026 ZimMarket Digital Platform. Built for Harare, Bulawayo & Beyond.
+    </div>
+  </section>
+
+  <!-- ================= APP HEADER & NAV ================= -->
+  <nav id="app-nav" class="hidden bg-black text-white p-4 flex flex-wrap justify-between items-center sticky top-0 z-50">
     <div class="flex items-center space-x-3">
-      <h1 class="text-xl font-bold tracking-wide text-amber-400">ZimMarket</h1>
+      <button onclick="showWelcomeScreen()" class="text-xl font-bold tracking-wide text-amber-400 hover:opacity-80">ZimMarket</button>
       <span id="portal-badge" class="bg-indigo-600 text-xs px-2 py-0.5 rounded font-bold uppercase">Buyer Portal</span>
     </div>
     
     <div class="flex items-center space-x-2 mt-2 sm:mt-0">
-      <button onclick="switchPortal('buyer')" class="bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold">Buyer Portal</button>
-      <button onclick="switchPortal('seller')" class="bg-amber-600 hover:bg-amber-500 px-3 py-1.5 rounded text-xs font-bold text-black">Seller Portal</button>
+      <button onclick="switchPortal('buyer')" class="bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold">Buyer</button>
+      <button onclick="switchPortal('seller')" class="bg-amber-600 hover:bg-amber-500 px-3 py-1.5 rounded text-xs font-bold text-black">Seller</button>
       <button onclick="switchTab('pricing')" class="bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-xs font-bold">Plans</button>
       
       <div id="auth-controls" class="ml-2 pl-2 border-l border-gray-700">
-        <button id="auth-btn" onclick="openAuthModal()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded text-xs font-bold">Login / Sign Up</button>
+        <button id="auth-btn" onclick="openAuthModal('login')" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded text-xs font-bold">Login / Sign Up</button>
       </div>
     </div>
   </nav>
@@ -38,15 +82,39 @@
   </div>
 
   <!-- ================= BUYER PORTAL ================= -->
-  <main id="buyer-portal" class="max-w-md mx-auto my-4 p-2">
+  <main id="buyer-portal" class="hidden max-w-md mx-auto my-4 p-2">
+    <!-- Sub-navigation -->
     <div class="flex justify-between items-center mb-3 bg-white p-2 rounded-lg shadow-sm text-xs font-bold">
       <button onclick="switchBuyerTab('feed')" class="text-indigo-600">Video Reels Feed</button>
-      <button onclick="switchBuyerTab('orders')" class="text-gray-600 hover:text-indigo-600">📦 My Orders</button>
+      <button onclick="switchBuyerTab('orders')" class="text-gray-600 hover:text-indigo-600">📦 My Offers</button>
+      <button onclick="switchBuyerTab('chat')" class="text-gray-600 hover:text-indigo-600">💬 Live Chat</button>
       <button onclick="switchBuyerTab('cashback')" class="text-gray-600 hover:text-indigo-600">💰 Cashback</button>
     </div>
 
-    <!-- Feed View -->
-    <div id="buyer-feed-view">
+    <!-- Step 3: Search, Category & Location Filters -->
+    <div id="buyer-feed-view" class="space-y-3">
+      <div class="bg-white p-3 rounded-xl shadow-sm space-y-2">
+        <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="🔍 Search products (e.g. Solar, Shoes...)" class="w-full p-2 border rounded-lg text-xs bg-gray-50">
+        
+        <div class="grid grid-cols-2 gap-2">
+          <select id="category-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50">
+            <option value="">All Categories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion & Apparel</option>
+            <option value="Solar">Solar & Power</option>
+            <option value="Vehicles">Vehicles & Parts</option>
+          </select>
+          <select id="location-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50">
+            <option value="">All Locations</option>
+            <option value="Harare">Harare</option>
+            <option value="Bulawayo">Bulawayo</option>
+            <option value="Gweru">Gweru</option>
+            <option value="Mutare">Mutare</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Reels Feed -->
       <div id="reels-feed" class="reel-container rounded-xl shadow-lg bg-black relative">
         <div class="p-8 text-center text-white">Loading dynamic feed...</div>
       </div>
@@ -54,25 +122,28 @@
 
     <!-- Orders View -->
     <div id="buyer-orders-view" class="hidden bg-white p-4 rounded-xl shadow space-y-3">
-      <h3 class="font-bold text-lg text-indigo-900">My Orders & Offers</h3>
+      <h3 class="font-bold text-lg text-indigo-900">My Orders & Negotiations</h3>
       <div id="buyer-orders-list" class="space-y-2">
-        <p class="text-xs text-gray-500">Loading your orders...</p>
+        <p class="text-xs text-gray-500">Loading your offers...</p>
       </div>
+    </div>
+
+    <!-- Step 2: In-App Chat View -->
+    <div id="buyer-chat-view" class="hidden bg-white p-4 rounded-xl shadow space-y-3">
+      <h3 class="font-bold text-lg text-indigo-900">Live Messaging Desk</h3>
+      <div id="chat-messages" class="h-64 overflow-y-scroll border p-3 rounded-lg bg-gray-50 space-y-2 text-xs">
+        <p class="text-gray-400 text-center">No messages yet. Start a negotiation from any product listing!</p>
+      </div>
+      <form onsubmit="sendChatMessage(event)" class="flex space-x-2">
+        <input type="text" id="chat-input" placeholder="Type message..." required class="w-full p-2 border rounded text-xs">
+        <button type="submit" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded text-xs">Send</button>
+      </form>
     </div>
 
     <!-- Cashback View -->
     <div id="buyer-cashback-view" class="hidden bg-white p-4 rounded-xl shadow space-y-3">
-      <h3 class="font-bold text-lg text-indigo-900">VIP Cashback & Exclusive Deals</h3>
-      <p class="text-xs text-gray-500">Premium Buyers earn up to 5% EcoCash cashback on selected promo items!</p>
-      
-      <div class="border p-3 rounded-lg flex justify-between items-center bg-indigo-50 border-indigo-200">
-        <div>
-          <span class="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">5% CASHBACK</span>
-          <h4 class="font-bold text-sm mt-1">Solar Inverter 3KW</h4>
-          <p class="text-xs text-gray-600">$280.00 USD</p>
-        </div>
-        <button onclick="triggerPaynowModal('Solar Inverter 3KW', 280)" class="bg-indigo-600 text-white text-xs font-bold px-3 py-2 rounded">Claim & Buy</button>
-      </div>
+      <h3 class="font-bold text-lg text-indigo-900">VIP Cashback Deals</h3>
+      <p class="text-xs text-gray-500">Earn EcoCash rewards on verified items.</p>
     </div>
   </main>
 
@@ -80,41 +151,41 @@
   <main id="seller-portal" class="hidden max-w-2xl mx-auto my-6 p-6 bg-white rounded-xl shadow-md">
     <div id="seller-auth-shield" class="hidden p-6 text-center bg-amber-50 border border-amber-200 rounded-xl">
       <h3 class="text-lg font-bold text-amber-900 mb-2">Seller Authentication Required</h3>
-      <p class="text-xs text-amber-700 mb-4">You must be signed in with a Seller or Hybrid account to access the Seller Studio.</p>
-      <button onclick="openAuthModal()" class="bg-amber-500 text-black font-bold px-4 py-2 rounded text-xs shadow">Login / Create Seller Account</button>
+      <p class="text-xs text-amber-700 mb-4">Please log in or register a seller account to manage your store.</p>
+      <button onclick="openAuthModal('login')" class="bg-amber-500 text-black font-bold px-4 py-2 rounded text-xs shadow">Login / Create Seller Account</button>
     </div>
 
     <div id="seller-dashboard-content">
       <div class="flex justify-between items-center mb-6 pb-4 border-b">
         <div>
           <h2 class="text-2xl font-bold">Seller Dashboard & Studio</h2>
-          <p class="text-xs text-gray-500">Manage listings and view incoming buyer negotiations.</p>
+          <p class="text-xs text-gray-500">Post items, upload videos, and close offers.</p>
         </div>
         <div>
           <select id="seller-tier-select" onchange="updateSellerLimits()" class="p-1 text-xs border rounded bg-gray-50">
-            <option value="free">Free Starter ($0 - Max 1 Image)</option>
+            <option value="free">Free Starter ($0)</option>
             <option value="basic">Basic Local ($2.99/mo)</option>
-            <option value="pro" selected>Pro Seller ($9.99/mo - Video Reels)</option>
-            <option value="hybrid">Hybrid All-Access ($14.99/mo)</option>
+            <option value="pro" selected>Pro Seller ($9.99/mo)</option>
           </select>
         </div>
       </div>
 
       <div class="flex space-x-4 mb-4 border-b pb-2">
         <button onclick="switchSellerSubTab('upload')" class="font-bold text-xs text-amber-600 border-b-2 border-amber-600 pb-1">Upload New Item</button>
-        <button onclick="switchSellerSubTab('orders')" class="font-bold text-xs text-gray-500 hover:text-amber-600 pb-1">Incoming Buyer Offers</button>
+        <button onclick="switchSellerSubTab('orders')" class="font-bold text-xs text-gray-500 hover:text-amber-600 pb-1">Incoming Offers</button>
       </div>
 
-      <!-- Upload Form with Direct File Uploads -->
+      <!-- Upload Form -->
       <form id="seller-upload-form" onsubmit="handleSellerUpload(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold mb-1">Product Title</label>
-          <input type="text" id="prod-title" placeholder="e.g. Leather Shoes" required class="w-full p-2 border rounded text-sm">
+          <input type="text" id="prod-title" placeholder="e.g. Solar Panel 450W" required class="w-full p-2 border rounded text-sm">
         </div>
+
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold mb-1">Price ($ USD)</label>
-            <input type="number" step="0.01" id="prod-price" placeholder="15.00" required class="w-full p-2 border rounded text-sm">
+            <input type="number" step="0.01" id="prod-price" placeholder="120.00" required class="w-full p-2 border rounded text-sm">
           </div>
           <div>
             <label class="block text-xs font-bold mb-1">Currency</label>
@@ -125,13 +196,34 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold mb-1">Category</label>
+            <select id="prod-category" class="w-full p-2 border rounded text-sm bg-gray-50">
+              <option value="Electronics">Electronics</option>
+              <option value="Fashion">Fashion & Apparel</option>
+              <option value="Solar">Solar & Power</option>
+              <option value="Vehicles">Vehicles & Parts</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">City / Location</label>
+            <select id="prod-location" class="w-full p-2 border rounded text-sm bg-gray-50">
+              <option value="Harare">Harare</option>
+              <option value="Bulawayo">Bulawayo</option>
+              <option value="Gweru">Gweru</option>
+              <option value="Mutare">Mutare</option>
+            </select>
+          </div>
+        </div>
+
         <div id="image-upload-field">
           <label class="block text-xs font-bold mb-1">Product Photo File</label>
           <input type="file" id="prod-image-file" accept="image/*" class="w-full p-1.5 border rounded text-xs bg-gray-50">
         </div>
 
         <div id="video-upload-field">
-          <label class="block text-xs font-bold mb-1 text-amber-600">Video Reel File (.mp4) - Pro / Hybrid Tier</label>
+          <label class="block text-xs font-bold mb-1 text-amber-600">Video Reel File (.mp4)</label>
           <input type="file" id="prod-video-file" accept="video/mp4" class="w-full p-1.5 border rounded text-xs bg-gray-50">
         </div>
 
@@ -142,7 +234,7 @@
 
       <!-- Incoming Offers Desk -->
       <div id="seller-orders-desk" class="hidden space-y-3">
-        <h4 class="font-bold text-sm text-gray-800">Pending Negotiations & Orders</h4>
+        <h4 class="font-bold text-sm text-gray-800">Pending Negotiations & Offers</h4>
         <div id="seller-orders-list" class="space-y-2">
           <p class="text-xs text-gray-500">Loading incoming offers...</p>
         </div>
@@ -152,64 +244,22 @@
 
   <!-- SUBSCRIPTION PLANS -->
   <section id="pricing-section" class="hidden max-w-5xl mx-auto my-8 p-4">
-    <h2 class="text-2xl font-bold text-center mb-1">Flexible Zimbabwean Pricing Tiers</h2>
-    <p class="text-center text-gray-500 text-xs mb-6">Designed for buyers, individual sellers, and full enterprises</p>
-
-    <div class="grid md:grid-cols-4 gap-4">
-      <div class="bg-white p-4 rounded-xl border flex flex-col justify-between">
-        <div>
-          <h3 class="font-bold text-gray-800">Free Starter</h3>
-          <p class="text-2xl font-extrabold mt-2">$0.00</p>
-          <ul class="text-[11px] text-gray-600 mt-3 space-y-1.5">
-            <li>✓ Max 10 items listed</li>
-            <li>✓ 1 photo per product</li>
-            <li>❌ No video reels</li>
-          </ul>
-        </div>
-        <button onclick="switchPortal('seller')" class="mt-4 w-full bg-gray-200 text-gray-800 font-bold py-1.5 rounded text-xs">Start Free</button>
+    <h2 class="text-2xl font-bold text-center mb-1">Subscription Plans</h2>
+    <div class="grid md:grid-cols-3 gap-4 mt-6">
+      <div class="bg-white p-4 rounded-xl border">
+        <h3 class="font-bold">Starter</h3>
+        <p class="text-xl font-extrabold mt-1">$0.00</p>
+        <button onclick="enterPortal('seller')" class="mt-4 w-full bg-gray-200 font-bold py-1.5 rounded text-xs">Start Free</button>
       </div>
-
-      <div class="bg-white p-4 rounded-xl border border-indigo-200 shadow-sm flex flex-col justify-between">
-        <div>
-          <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded">Budget Option</span>
-          <h3 class="font-bold text-gray-800 mt-1">Basic Local</h3>
-          <p class="text-2xl font-extrabold mt-1">$2.99 <span class="text-xs font-normal text-gray-500">/mo</span></p>
-          <ul class="text-[11px] text-gray-600 mt-3 space-y-1.5">
-            <li>✓ Up to 3 photos/product</li>
-            <li>✓ Basic store listing page</li>
-            <li>✓ Direct WhatsApp inquiries</li>
-          </ul>
-        </div>
-        <button class="mt-4 w-full bg-indigo-600 text-white font-bold py-1.5 rounded text-xs">Choose $2.99</button>
+      <div class="bg-white p-4 rounded-xl border-2 border-amber-500">
+        <h3 class="font-bold">Pro Seller</h3>
+        <p class="text-xl font-extrabold mt-1">$9.99/mo</p>
+        <button onclick="enterPortal('seller')" class="mt-4 w-full bg-amber-500 font-bold py-1.5 rounded text-xs">Get Pro</button>
       </div>
-
-      <div class="bg-white p-4 rounded-xl border-2 border-amber-500 flex flex-col justify-between">
-        <div>
-          <span class="bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded">Popular</span>
-          <h3 class="font-bold text-gray-800 mt-1">Pro Seller</h3>
-          <p class="text-2xl font-extrabold mt-1">$9.99 <span class="text-xs font-normal text-gray-500">/mo</span></p>
-          <ul class="text-[11px] text-gray-600 mt-3 space-y-1.5">
-            <li>✓ Unlimited Video Reels</li>
-            <li>✓ Direct Paynow/EcoCash</li>
-            <li>✓ Custom store branding</li>
-          </ul>
-        </div>
-        <button class="mt-4 w-full bg-amber-500 text-black font-bold py-1.5 rounded text-xs">Choose $9.99</button>
-      </div>
-
-      <div class="bg-slate-900 text-white p-4 rounded-xl border-2 border-indigo-500 flex flex-col justify-between">
-        <div>
-          <span class="bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">All-In-One</span>
-          <h3 class="font-bold text-white mt-1">Hybrid Premium</h3>
-          <p class="text-2xl font-extrabold mt-1 text-indigo-400">$14.99 <span class="text-xs font-normal text-slate-400">/mo</span></p>
-          <ul class="text-[11px] text-slate-300 mt-3 space-y-1.5">
-            <li>✓ Full Buyer VIP Cashback</li>
-            <li>✓ Unlimited Seller Reels</li>
-            <li>✓ Verified Seller Badge</li>
-            <li>✓ 0% Platform Sales Fees</li>
-          </ul>
-        </div>
-        <button class="mt-4 w-full bg-indigo-600 text-white font-bold py-1.5 rounded text-xs">Get Hybrid</button>
+      <div class="bg-slate-900 text-white p-4 rounded-xl border">
+        <h3 class="font-bold">Hybrid VIP</h3>
+        <p class="text-xl font-extrabold mt-1 text-indigo-400">$14.99/mo</p>
+        <button onclick="enterPortal('seller')" class="mt-4 w-full bg-indigo-600 font-bold py-1.5 rounded text-xs">Get Hybrid</button>
       </div>
     </div>
   </section>
@@ -237,9 +287,8 @@
         <div id="signup-role-field" class="hidden">
           <label class="block text-xs font-bold mb-1">Account Type</label>
           <select id="auth-role" class="w-full p-2 border rounded text-xs bg-gray-50">
-            <option value="buyer">Buyer (Shop & Negotiate)</option>
-            <option value="seller">Seller (Store Owner)</option>
-            <option value="hybrid">Hybrid (Buyer + Seller VIP)</option>
+            <option value="buyer">Buyer Account</option>
+            <option value="seller">Seller Account</option>
           </select>
         </div>
 
@@ -250,41 +299,93 @@
     </div>
   </div>
 
-  <!-- Price Negotiation & Paynow Modal -->
+  <!-- Negotiation & Payment Modal -->
   <div id="paynow-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded-xl max-w-sm w-full">
-      <h3 class="text-lg font-bold mb-1">Product Checkout & Offer</h3>
+      <h3 class="text-lg font-bold mb-1">Product Negotiation</h3>
       <p id="modal-item-details" class="text-xs text-gray-600 mb-3"></p>
       
       <div class="mb-3 p-2 bg-gray-50 rounded border">
-        <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Negotiate Price / Offer Price ($ USD)</label>
+        <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">Offer Price ($ USD)</label>
         <input type="number" id="offer-price" placeholder="Enter counter offer..." class="w-full p-1.5 text-xs border rounded">
       </div>
 
-      <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">EcoCash Mobile Number</label>
+      <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">EcoCash Phone Number</label>
       <input type="text" id="ecocash-number" placeholder="077XXXXXXX" class="w-full p-2 border rounded text-xs mb-4">
       
+      <!-- Step 1: Integrated WhatsApp Button -->
       <div class="flex space-x-2">
-        <button onclick="processMobilePayment()" class="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">Pay EcoCash</button>
-        <button onclick="openWhatsAppNegotiation()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded text-xs">WhatsApp Offer</button>
+        <button onclick="processMobilePayment()" class="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">Submit Offer</button>
+        <button onclick="openWhatsAppNegotiation()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded text-xs">WhatsApp Alert</button>
       </div>
       <button onclick="closePaynowModal()" class="w-full mt-2 bg-gray-200 text-gray-700 font-bold py-1.5 rounded text-xs">Cancel</button>
     </div>
   </div>
 
+  <!-- JavaScript -->
   <script>
     const SUPABASE_URL = "https://kuvorxkuyijvntyrsdks.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_t-TmErHKkg9Cv2wZ94IKKw_cvXAYgUD";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let currentAuthMode = 'login';
     let currentUser = null;
-    let selectedProductForOffer = { title: '', price: 0 };
+    let selectedProductForOffer = { title: '', price: 0, seller_phone: '263770000000' };
+    let allProducts = [];
+
+    // Step 4: Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration skipped:', err));
+      });
+    }
 
     supabaseClient.auth.onAuthStateChange((event, session) => {
       currentUser = session?.user || null;
       updateUIForUser();
     });
+
+    function showWelcomeScreen() {
+      document.getElementById('welcome-screen').classList.remove('hidden');
+      document.getElementById('app-nav').classList.add('hidden');
+      document.getElementById('buyer-portal').classList.add('hidden');
+      document.getElementById('seller-portal').classList.add('hidden');
+      document.getElementById('pricing-section').classList.add('hidden');
+    }
+
+    function enterPortal(portal) {
+      document.getElementById('welcome-screen').classList.add('hidden');
+      document.getElementById('app-nav').classList.remove('hidden');
+      switchPortal(portal);
+    }
+
+    function switchPortal(portal) {
+      document.getElementById('buyer-portal').classList.add('hidden');
+      document.getElementById('seller-portal').classList.add('hidden');
+      document.getElementById('pricing-section').classList.add('hidden');
+
+      if (portal === 'buyer') {
+        document.getElementById('buyer-portal').classList.remove('hidden');
+        document.getElementById('portal-badge').innerText = "Buyer Portal";
+        document.getElementById('portal-badge').className = "bg-indigo-600 text-xs px-2 py-0.5 rounded font-bold uppercase";
+      } else if (portal === 'seller') {
+        document.getElementById('seller-portal').classList.remove('hidden');
+        document.getElementById('portal-badge').innerText = "Seller Portal";
+        document.getElementById('portal-badge').className = "bg-amber-500 text-black text-xs px-2 py-0.5 rounded font-bold uppercase";
+        updateSellerLimits();
+        loadOrdersFromDB();
+      }
+    }
+
+    function switchTab(tab) {
+      if (tab === 'pricing') {
+        document.getElementById('welcome-screen').classList.add('hidden');
+        document.getElementById('app-nav').classList.remove('hidden');
+        document.getElementById('buyer-portal').classList.add('hidden');
+        document.getElementById('seller-portal').classList.add('hidden');
+        document.getElementById('pricing-section').classList.remove('hidden');
+      }
+    }
 
     function updateUIForUser() {
       const authBtn = document.getElementById('auth-btn');
@@ -297,18 +398,24 @@
         authBtn.innerText = "My Profile";
         userBanner.classList.remove('hidden');
         userEmailDisplay.innerText = currentUser.email;
-        sellerShield.classList.add('hidden');
-        sellerDashboard.classList.remove('hidden');
+        if (sellerShield) sellerShield.classList.add('hidden');
+        if (sellerDashboard) sellerDashboard.classList.remove('hidden');
       } else {
         authBtn.innerText = "Login / Sign Up";
         userBanner.classList.add('hidden');
-        sellerShield.classList.remove('hidden');
-        sellerDashboard.classList.add('hidden');
+        if (sellerShield) sellerShield.classList.remove('hidden');
+        if (sellerDashboard) sellerDashboard.classList.add('hidden');
       }
     }
 
-    function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
-    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+    function openAuthModal(mode) { 
+      switchAuthMode(mode);
+      document.getElementById('auth-modal').classList.remove('hidden'); 
+    }
+    
+    function closeAuthModal() { 
+      document.getElementById('auth-modal').classList.add('hidden'); 
+    }
 
     function switchAuthMode(mode) {
       currentAuthMode = mode;
@@ -334,23 +441,23 @@
       e.preventDefault();
       const email = document.getElementById('auth-email').value;
       const password = document.getElementById('auth-password').value;
-      const role = document.getElementById('auth-role').value;
+      const role = document.getElementById('auth-role')?.value || 'buyer';
 
       if (currentAuthMode === 'signup') {
-        const { data, error } = await supabaseClient.auth.signUp({
-          email, password, options: { data: { role: role } }
-        });
+        const { error } = await supabaseClient.auth.signUp({ email, password, options: { data: { role } } });
         if (error) alert("Sign Up Error: " + error.message);
         else {
           alert("Account created successfully!");
           closeAuthModal();
+          enterPortal(role);
         }
       } else {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) alert("Login Error: " + error.message);
         else {
           alert("Welcome back!");
           closeAuthModal();
+          enterPortal('buyer');
         }
       }
     }
@@ -358,43 +465,23 @@
     async function handleLogout() {
       await supabaseClient.auth.signOut();
       alert("Logged out successfully.");
-    }
-
-    function switchPortal(portal) {
-      document.getElementById('buyer-portal').classList.add('hidden');
-      document.getElementById('seller-portal').classList.add('hidden');
-      document.getElementById('pricing-section').classList.add('hidden');
-
-      if (portal === 'buyer') {
-        document.getElementById('buyer-portal').classList.remove('hidden');
-        document.getElementById('portal-badge').innerText = "Buyer Portal";
-        document.getElementById('portal-badge').className = "bg-indigo-600 text-xs px-2 py-0.5 rounded font-bold uppercase";
-      } else if (portal === 'seller') {
-        document.getElementById('seller-portal').classList.remove('hidden');
-        document.getElementById('portal-badge').innerText = "Seller Portal";
-        document.getElementById('portal-badge').className = "bg-amber-500 text-black text-xs px-2 py-0.5 rounded font-bold uppercase";
-        updateSellerLimits();
-        loadOrdersFromDB();
-      }
-    }
-
-    function switchTab(tab) {
-      if (tab === 'pricing') {
-        document.getElementById('buyer-portal').classList.add('hidden');
-        document.getElementById('seller-portal').classList.add('hidden');
-        document.getElementById('pricing-section').classList.remove('hidden');
-      }
+      showWelcomeScreen();
     }
 
     function switchBuyerTab(subTab) {
       document.getElementById('buyer-feed-view').classList.add('hidden');
       document.getElementById('buyer-orders-view').classList.add('hidden');
+      document.getElementById('buyer-chat-view').classList.add('hidden');
       document.getElementById('buyer-cashback-view').classList.add('hidden');
 
       if (subTab === 'feed') document.getElementById('buyer-feed-view').classList.remove('hidden');
       if (subTab === 'orders') {
         document.getElementById('buyer-orders-view').classList.remove('hidden');
         loadOrdersFromDB();
+      }
+      if (subTab === 'chat') {
+        document.getElementById('buyer-chat-view').classList.remove('hidden');
+        loadChatMessages();
       }
       if (subTab === 'cashback') document.getElementById('buyer-cashback-view').classList.remove('hidden');
     }
@@ -411,17 +498,18 @@
     }
 
     function updateSellerLimits() {
-      const tier = document.getElementById('seller-tier-select').value;
+      const tier = document.getElementById('seller-tier-select')?.value;
       const videoField = document.getElementById('video-upload-field');
 
-      if (tier === 'free' || tier === 'basic') {
-        videoField.classList.add('opacity-50', 'pointer-events-none');
-      } else {
-        videoField.classList.remove('opacity-50', 'pointer-events-none');
+      if (videoField) {
+        if (tier === 'free') {
+          videoField.classList.add('opacity-50', 'pointer-events-none');
+        } else {
+          videoField.classList.remove('opacity-50', 'pointer-events-none');
+        }
       }
     }
 
-    // Storage File Upload Helper
     async function uploadMediaFile(file) {
       if (!file) return null;
       const fileExt = file.name.split('.').pop();
@@ -430,7 +518,7 @@
 
       const { data, error } = await supabaseClient.storage.from('marketplace-media').upload(filePath, file);
       if (error) {
-        alert("Media Upload Error: " + error.message);
+        console.error("Storage error:", error);
         return null;
       }
 
@@ -444,54 +532,71 @@
       submitBtn.innerText = "Uploading media...";
       submitBtn.disabled = true;
 
-      const title = document.getElementById('prod-title').value;
-      const price = parseFloat(document.getElementById('prod-price').value);
-      const currency = document.getElementById('prod-curr').value;
+      try {
+        const title = document.getElementById('prod-title').value;
+        const price = parseFloat(document.getElementById('prod-price').value);
+        const currency = document.getElementById('prod-curr').value;
+        const category = document.getElementById('prod-category').value;
+        const location = document.getElementById('prod-location').value;
 
-      const imageFile = document.getElementById('prod-image-file').files[0];
-      const videoFile = document.getElementById('prod-video-file').files[0];
+        const imageFile = document.getElementById('prod-image-file')?.files[0];
+        const videoFile = document.getElementById('prod-video-file')?.files[0];
 
-      let image_url = await uploadMediaFile(imageFile);
-      let video_url = await uploadMediaFile(videoFile);
+        let image_url = imageFile ? await uploadMediaFile(imageFile) : null;
+        let video_url = videoFile ? await uploadMediaFile(videoFile) : null;
 
-      const { error } = await supabaseClient.from('products').insert([{ 
-        title, price, currency, image_url, video_url, is_reel: !!video_url 
-      }]);
+        const { error } = await supabaseClient.from('products').insert([{ 
+          title, price, currency, category, location, image_url, video_url, is_reel: !!video_url 
+        }]);
 
-      submitBtn.innerText = "Publish Listing to Marketplace";
-      submitBtn.disabled = false;
-
-      if (error) {
-        alert("Database Insert Error: " + error.message);
-      } else {
-        alert("Listing successfully published with media!");
-        document.getElementById('seller-upload-form').reset();
-        switchPortal('buyer');
-        loadProductsFromDB();
+        if (error) {
+          alert("Database Error: " + error.message);
+        } else {
+          alert("Listing published successfully!");
+          document.getElementById('seller-upload-form').reset();
+          switchPortal('buyer');
+          loadProductsFromDB();
+        }
+      } catch (err) {
+        alert("Unexpected error: " + err.message);
+      } finally {
+        submitBtn.innerText = "Publish Listing to Marketplace";
+        submitBtn.disabled = false;
       }
     }
 
+    // Step 3: Filter Logic
     async function loadProductsFromDB() {
-      const feed = document.getElementById('reels-feed');
       const { data: products, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+      if (!error && products) {
+        allProducts = products;
+        renderProducts(allProducts);
+      }
+    }
 
-      if (error || !products || products.length === 0) {
-        feed.innerHTML = `
-          <div class="reel-card relative flex items-center justify-center bg-gray-800 text-white">
-            <video class="w-full h-full object-cover" autoplay loop muted playsinline src="https://assets.mixkit.co/videos/preview/mixkit-shoes-in-a-store-42998-large.mp4"></video>
-            <div class="absolute bottom-4 left-4 right-4 bg-black/70 p-4 rounded-lg flex justify-between items-center">
-              <div>
-                <span class="bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded">VERIFIED SELLER</span>
-                <h3 class="font-bold text-white text-md mt-1">Sneaker Hub Harare</h3>
-                <p class="text-lg font-extrabold text-amber-400">$45.00 USD</p>
-              </div>
-              <button onclick="triggerPaynowModal('Sneaker Hub Harare', 45)" class="bg-green-600 text-white font-bold py-2 px-3 rounded text-xs">Buy / Negotiate</button>
-            </div>
-          </div>`;
+    function applyFilters() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const cat = document.getElementById('category-filter').value;
+      const loc = document.getElementById('location-filter').value;
+
+      const filtered = allProducts.filter(p => {
+        const matchesQuery = p.title ? p.title.toLowerCase().includes(query) : true;
+        const matchesCat = cat ? p.category === cat : true;
+        const matchesLoc = loc ? p.location === loc : true;
+        return matchesQuery && matchesCat && matchesLoc;
+      });
+
+      renderProducts(filtered);
+    }
+
+    function renderProducts(items) {
+      const feed = document.getElementById('reels-feed');
+      if (!items || items.length === 0) {
+        feed.innerHTML = `<div class="p-8 text-center text-gray-400">No items match your search.</div>`;
         return;
       }
 
-      feed.innerHTML = products.map(item => `
+      feed.innerHTML = items.map(item => `
         <div class="reel-card relative flex items-center justify-center bg-gray-800 text-white">
           ${item.video_url 
             ? `<video class="w-full h-full object-cover" autoplay loop muted playsinline src="${item.video_url}"></video>`
@@ -499,7 +604,8 @@
           }
           <div class="absolute bottom-4 left-4 right-4 bg-black/70 p-4 rounded-lg flex justify-between items-center">
             <div>
-              <h3 class="font-bold text-white text-sm">${item.title}</h3>
+              <span class="bg-indigo-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">${item.location || 'Harare'}</span>
+              <h3 class="font-bold text-white text-sm mt-1">${item.title}</h3>
               <p class="text-xs text-amber-400 font-extrabold">$${item.price} ${item.currency}</p>
             </div>
             <button onclick="triggerPaynowModal('${item.title}', ${item.price})" class="bg-green-600 text-white font-bold py-2 px-3 rounded text-xs">Buy / Negotiate</button>
@@ -509,49 +615,47 @@
     }
 
     async function loadOrdersFromDB() {
-      const { data: orders, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+      const { data: orders } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+      if (!orders) return;
 
-      if (error || !orders || orders.length === 0) {
-        document.getElementById('buyer-orders-list').innerHTML = `<p class="text-xs text-gray-500">No active orders found.</p>`;
-        document.getElementById('seller-orders-list').innerHTML = `<p class="text-xs text-gray-500">No incoming buyer offers yet.</p>`;
-        return;
+      const buyerList = document.getElementById('buyer-orders-list');
+      if (buyerList) {
+        buyerList.innerHTML = orders.map(o => `
+          <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs">
+            <div>
+              <h4 class="font-bold text-gray-800">${o.product_title}</h4>
+              <p class="text-gray-500">Offer: $${o.offer_price}.00 USD</p>
+            </div>
+            <span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[10px]">${o.status}</span>
+          </div>
+        `).join('');
       }
 
-      // Render Buyer View
-      document.getElementById('buyer-orders-list').innerHTML = orders.map(o => `
-        <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs">
-          <div>
-            <h4 class="font-bold text-gray-800">${o.product_title}</h4>
-            <p class="text-gray-500">Offer Price: $${o.offer_price}.00 USD</p>
+      const sellerList = document.getElementById('seller-orders-list');
+      if (sellerList) {
+        sellerList.innerHTML = orders.map(o => `
+          <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs">
+            <div>
+              <p class="font-bold">${o.product_title}</p>
+              <p class="text-gray-500">Offer: <span class="text-green-600 font-bold">$${o.offer_price}.00 USD</span></p>
+            </div>
+            <div class="space-x-1">
+              <button onclick="updateOrderStatus('${o.id}', 'Accepted')" class="bg-green-600 text-white font-bold px-2 py-1 rounded">Accept</button>
+              <button onclick="updateOrderStatus('${o.id}', 'Declined')" class="bg-gray-300 text-gray-700 font-bold px-2 py-1 rounded">Decline</button>
+            </div>
           </div>
-          <span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[10px]">${o.status}</span>
-        </div>
-      `).join('');
-
-      // Render Seller Desk View
-      document.getElementById('seller-orders-list').innerHTML = orders.map(o => `
-        <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs">
-          <div>
-            <p class="font-bold">${o.product_title}</p>
-            <p class="text-gray-500">Offer: <span class="text-green-600 font-bold">$${o.offer_price}.00 USD</span> (${o.buyer_email || 'Guest'})</p>
-          </div>
-          <div class="space-x-1">
-            <button onclick="updateOrderStatus('${o.id}', 'Accepted')" class="bg-green-600 text-white font-bold px-2 py-1 rounded">Accept</button>
-            <button onclick="updateOrderStatus('${o.id}', 'Declined')" class="bg-gray-300 text-gray-700 font-bold px-2 py-1 rounded">Decline</button>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     }
 
     async function updateOrderStatus(orderId, newStatus) {
-      const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
-      if (error) alert("Error: " + error.message);
-      else loadOrdersFromDB();
+      await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
+      loadOrdersFromDB();
     }
 
     function triggerPaynowModal(itemTitle, price) {
       selectedProductForOffer = { title: itemTitle, price: price };
-      document.getElementById('modal-item-details').innerText = `Item: ${itemTitle} | Fixed Price: $${price}.00 USD`;
+      document.getElementById('modal-item-details').innerText = `Item: ${itemTitle} | Price: $${price}.00 USD`;
       document.getElementById('paynow-modal').classList.remove('hidden');
     }
 
@@ -561,51 +665,62 @@
 
     async function processMobilePayment() {
       const phone = document.getElementById('ecocash-number').value;
-      if(!phone) { alert('Please enter EcoCash number'); return; }
-      
       const offerPrice = parseFloat(document.getElementById('offer-price').value) || selectedProductForOffer.price;
       const userEmail = currentUser ? currentUser.email : 'Guest Buyer';
 
       await supabaseClient.from('orders').insert([{
         product_title: selectedProductForOffer.title,
         offer_price: offerPrice,
-        status: 'Processing EcoCash',
+        status: 'Submitted',
         buyer_email: userEmail
       }]);
       
-      alert(`EcoCash prompt sent to ${phone} for $${offerPrice}. Check your phone to authorize.`);
+      alert(`Offer of $${offerPrice} submitted successfully!`);
       closePaynowModal();
       switchBuyerTab('orders');
     }
 
+    // Step 1: Automatic WhatsApp Link Generator
     async function openWhatsAppNegotiation() {
       const offerPrice = parseFloat(document.getElementById('offer-price').value) || selectedProductForOffer.price;
-      const userEmail = currentUser ? currentUser.email : 'Guest Buyer';
-
-      await supabaseClient.from('orders').insert([{
-        product_title: selectedProductForOffer.title,
-        offer_price: offerPrice,
-        status: 'WhatsApp Negotiating',
-        buyer_email: userEmail
-      }]);
-
-      const msg = encodeURIComponent(`Hi! I am interested in buying "${selectedProductForOffer.title}" listed for $${selectedProductForOffer.price}. My offer is $${offerPrice}. Is this available?`);
+      const msg = encodeURIComponent(`Hi! I want to negotiate for "${selectedProductForOffer.title}". My offer is $${offerPrice}. Is it available?`);
       window.open(`https://wa.me/263770000000?text=${msg}`, '_blank');
       closePaynowModal();
-      switchBuyerTab('orders');
     }
 
-    // Subscribe to Realtime Updates
-    supabaseClient.channel('orders-channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
-        loadOrdersFromDB();
-      })
-      .subscribe();
+    // Step 2: In-App Chat Functions
+    async function loadChatMessages() {
+      const { data: msgs } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
+      const box = document.getElementById('chat-messages');
+      if (!msgs || msgs.length === 0) {
+        box.innerHTML = `<p class="text-gray-400 text-center">No messages yet. Send a message below!</p>`;
+        return;
+      }
+      box.innerHTML = msgs.map(m => `
+        <div class="p-2 rounded bg-indigo-50 border border-indigo-100">
+          <span class="font-bold text-indigo-900">${m.sender_email || 'User'}:</span>
+          <p class="text-gray-800">${m.text}</p>
+        </div>
+      `).join('');
+      box.scrollTop = box.scrollHeight;
+    }
 
-    supabaseClient.channel('products-channel')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        loadProductsFromDB();
-      })
+    async function sendChatMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const text = input.value;
+      const sender = currentUser ? currentUser.email : 'Guest';
+
+      await supabaseClient.from('messages').insert([{ text: text, sender_email: sender }]);
+      input.value = '';
+      loadChatMessages();
+    }
+
+    // Realtime subscriptions
+    supabaseClient.channel('realtime-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => loadOrdersFromDB())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, () => loadChatMessages())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => loadProductsFromDB())
       .subscribe();
 
     loadProductsFromDB();
