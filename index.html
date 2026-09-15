@@ -18,6 +18,7 @@
     <h1 class="text-xl font-bold tracking-wide">ZimMarket</h1>
     <div class="space-x-4">
       <button onclick="switchTab('reels')" class="hover:text-amber-400 font-medium">Reels Feed</button>
+      <button onclick="switchTab('seller')" class="hover:text-amber-400 font-medium text-amber-400">Seller Studio</button>
       <button onclick="switchTab('pricing')" class="hover:text-amber-400 font-medium">Subscriptions</button>
     </div>
   </nav>
@@ -30,7 +31,45 @@
     </div>
   </section>
 
-  <!-- Section 2: Subscriptions -->
+  <!-- Section 2: Seller Studio & Product Uploader -->
+  <section id="seller-section" class="hidden max-w-2xl mx-auto my-8 p-6 bg-white rounded-xl shadow-md">
+    <h2 class="text-2xl font-bold mb-4">Seller Dashboard & Product Creator</h2>
+    <p class="text-sm text-gray-500 mb-6">Create a store listing or add a shoppable video reel to your storefront.</p>
+    
+    <form id="add-product-form" onsubmit="handleProductUpload(event)" class="space-y-4">
+      <div>
+        <label class="block text-sm font-bold mb-1">Product Title</label>
+        <input type="text" id="prod-title" placeholder="e.g. Leather Jacket" required class="w-full p-2 border border-gray-300 rounded">
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1">Description</label>
+        <textarea id="prod-desc" placeholder="Product details, sizes, shipping info..." class="w-full p-2 border border-gray-300 rounded"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-bold mb-1">Price ($ USD)</label>
+          <input type="number" step="0.01" id="prod-price" placeholder="25.00" required class="w-full p-2 border border-gray-300 rounded">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1">Currency</label>
+          <select id="prod-curr" class="w-full p-2 border border-gray-300 rounded">
+            <option value="USD">USD ($)</option>
+            <option value="ZiG">ZiG</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-bold mb-1">MP4 Video Reel Link</label>
+        <input type="url" id="prod-video" placeholder="https://domain.com/video.mp4" required class="w-full p-2 border border-gray-300 rounded">
+        <span class="text-xs text-gray-500">Paste any public direct MP4 video link to display as a reel feed item.</span>
+      </div>
+      <button type="submit" id="upload-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-lg shadow">
+        Publish Video Reel Listing
+      </button>
+    </form>
+  </section>
+
+  <!-- Section 3: Subscriptions -->
   <section id="pricing-section" class="hidden max-w-4xl mx-auto my-8 p-4">
     <h2 class="text-2xl font-bold text-center mb-6">Choose Your Subscription Tier</h2>
     <div class="grid md:grid-cols-2 gap-6">
@@ -76,7 +115,8 @@
       
       const { data: products, error } = await supabaseClient
         .from('products')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error || !products || products.length === 0) {
         feed.innerHTML = `
@@ -109,10 +149,42 @@
       `).join('');
     }
 
+    async function handleProductUpload(event) {
+      event.preventDefault();
+      const btn = document.getElementById('upload-btn');
+      btn.innerText = "Publishing to Database...";
+      btn.disabled = true;
+
+      const title = document.getElementById('prod-title').value;
+      const description = document.getElementById('prod-desc').value;
+      const price = parseFloat(document.getElementById('prod-price').value);
+      const currency = document.getElementById('prod-curr').value;
+      const video_url = document.getElementById('prod-video').value;
+
+      const { data, error } = await supabaseClient
+        .from('products')
+        .insert([{ title, description, price, currency, video_url, is_reel: true }]);
+
+      if (error) {
+        alert("Upload Error: " + error.message);
+      } else {
+        alert("Product Reel successfully published!");
+        document.getElementById('add-product-form').reset();
+        switchTab('reels');
+        loadProductsFromDB();
+      }
+
+      btn.innerText = "Publish Video Reel Listing";
+      btn.disabled = false;
+    }
+
     function switchTab(tabName) {
       document.getElementById('reels-section').classList.add('hidden');
+      document.getElementById('seller-section').classList.add('hidden');
       document.getElementById('pricing-section').classList.add('hidden');
+
       if (tabName === 'reels') document.getElementById('reels-section').classList.remove('hidden');
+      if (tabName === 'seller') document.getElementById('seller-section').classList.remove('hidden');
       if (tabName === 'pricing') document.getElementById('pricing-section').classList.remove('hidden');
     }
 
