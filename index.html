@@ -105,7 +105,7 @@
         <button onclick="switchSellerSubTab('orders')" class="font-bold text-xs text-gray-500 hover:text-amber-600 pb-1">Incoming Buyer Offers</button>
       </div>
 
-      <!-- Upload Form -->
+      <!-- Upload Form with Direct File Uploads -->
       <form id="seller-upload-form" onsubmit="handleSellerUpload(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold mb-1">Product Title</label>
@@ -126,16 +126,16 @@
         </div>
 
         <div id="image-upload-field">
-          <label class="block text-xs font-bold mb-1">Product Image URL (1 Photo Limit for Free Tier)</label>
-          <input type="url" id="prod-image" placeholder="https://domain.com/image.jpg" class="w-full p-2 border rounded text-sm">
+          <label class="block text-xs font-bold mb-1">Product Photo File</label>
+          <input type="file" id="prod-image-file" accept="image/*" class="w-full p-1.5 border rounded text-xs bg-gray-50">
         </div>
 
         <div id="video-upload-field">
-          <label class="block text-xs font-bold mb-1 text-amber-600">MP4 Video Reel URL (Pro / Hybrid Tier Only)</label>
-          <input type="url" id="prod-video" placeholder="https://domain.com/video.mp4" class="w-full p-2 border rounded text-sm">
+          <label class="block text-xs font-bold mb-1 text-amber-600">Video Reel File (.mp4) - Pro / Hybrid Tier</label>
+          <input type="file" id="prod-video-file" accept="video/mp4" class="w-full p-1.5 border rounded text-xs bg-gray-50">
         </div>
 
-        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg text-sm shadow">
+        <button type="submit" id="upload-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg text-sm shadow">
           Publish Listing to Marketplace
         </button>
       </form>
@@ -421,6 +421,56 @@
       }
     }
 
+    // Storage File Upload Helper
+    async function uploadMediaFile(file) {
+      if (!file) return null;
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `uploads/${fileName}`;
+
+      const { data, error } = await supabaseClient.storage.from('marketplace-media').upload(filePath, file);
+      if (error) {
+        alert("Media Upload Error: " + error.message);
+        return null;
+      }
+
+      const { data: publicUrlData } = supabaseClient.storage.from('marketplace-media').getPublicUrl(filePath);
+      return publicUrlData.publicUrl;
+    }
+
+    async function handleSellerUpload(event) {
+      event.preventDefault();
+      const submitBtn = document.getElementById('upload-submit-btn');
+      submitBtn.innerText = "Uploading media...";
+      submitBtn.disabled = true;
+
+      const title = document.getElementById('prod-title').value;
+      const price = parseFloat(document.getElementById('prod-price').value);
+      const currency = document.getElementById('prod-curr').value;
+
+      const imageFile = document.getElementById('prod-image-file').files[0];
+      const videoFile = document.getElementById('prod-video-file').files[0];
+
+      let image_url = await uploadMediaFile(imageFile);
+      let video_url = await uploadMediaFile(videoFile);
+
+      const { error } = await supabaseClient.from('products').insert([{ 
+        title, price, currency, image_url, video_url, is_reel: !!video_url 
+      }]);
+
+      submitBtn.innerText = "Publish Listing to Marketplace";
+      submitBtn.disabled = false;
+
+      if (error) {
+        alert("Database Insert Error: " + error.message);
+      } else {
+        alert("Listing successfully published with media!");
+        document.getElementById('seller-upload-form').reset();
+        switchPortal('buyer');
+        loadProductsFromDB();
+      }
+    }
+
     async function loadProductsFromDB() {
       const feed = document.getElementById('reels-feed');
       const { data: products, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
@@ -443,7 +493,10 @@
 
       feed.innerHTML = products.map(item => `
         <div class="reel-card relative flex items-center justify-center bg-gray-800 text-white">
-          <video class="w-full h-full object-cover" autoplay loop muted playsinline src="${item.video_url || 'https://assets.mixkit.co/videos/preview/mixkit-shoes-in-a-store-42998-large.mp4'}"></video>
+          ${item.video_url 
+            ? `<video class="w-full h-full object-cover" autoplay loop muted playsinline src="${item.video_url}"></video>`
+            : `<img class="w-full h-full object-cover" src="${item.image_url || 'https://via.placeholder.com/400x600'}" alt="${item.title}">`
+          }
           <div class="absolute bottom-4 left-4 right-4 bg-black/70 p-4 rounded-lg flex justify-between items-center">
             <div>
               <h3 class="font-bold text-white text-sm">${item.title}</h3>
@@ -496,24 +549,6 @@
       else loadOrdersFromDB();
     }
 
-    async function handleSellerUpload(event) {
-      event.preventDefault();
-      const title = document.getElementById('prod-title').value;
-      const price = parseFloat(document.getElementById('prod-price').value);
-      const currency = document.getElementById('prod-curr').value;
-      const video_url = document.getElementById('prod-video').value;
-
-      const { error } = await supabaseClient.from('products').insert([{ title, price, currency, video_url, is_reel: true }]);
-      if (error) {
-        alert("Upload Error: " + error.message);
-      } else {
-        alert("Listing published!");
-        document.getElementById('seller-upload-form').reset();
-        switchPortal('buyer');
-        loadProductsFromDB();
-      }
-    }
-
     function triggerPaynowModal(itemTitle, price) {
       selectedProductForOffer = { title: itemTitle, price: price };
       document.getElementById('modal-item-details').innerText = `Item: ${itemTitle} | Fixed Price: $${price}.00 USD`;
@@ -564,6 +599,12 @@
     supabaseClient.channel('orders-channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
         loadOrdersFromDB();
+      })
+      .subscribe();
+
+    supabaseClient.channel('products-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+        loadProductsFromDB();
       })
       .subscribe();
 
