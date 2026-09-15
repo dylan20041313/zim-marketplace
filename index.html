@@ -19,29 +19,38 @@
       <h1 class="text-xl font-bold tracking-wide text-amber-400">ZimMarket</h1>
       <span id="portal-badge" class="bg-indigo-600 text-xs px-2 py-0.5 rounded font-bold uppercase">Buyer Portal</span>
     </div>
-    <div class="space-x-2 mt-2 sm:mt-0">
+    
+    <div class="flex items-center space-x-2 mt-2 sm:mt-0">
       <button onclick="switchPortal('buyer')" class="bg-indigo-700 hover:bg-indigo-600 px-3 py-1.5 rounded text-xs font-bold">Buyer Portal</button>
       <button onclick="switchPortal('seller')" class="bg-amber-600 hover:bg-amber-500 px-3 py-1.5 rounded text-xs font-bold text-black">Seller Portal</button>
       <button onclick="switchTab('pricing')" class="bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-xs font-bold">Plans</button>
+      
+      <!-- Auth Status Controls -->
+      <div id="auth-controls" class="ml-2 pl-2 border-l border-gray-700">
+        <button id="auth-btn" onclick="openAuthModal()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded text-xs font-bold">Login / Sign Up</button>
+      </div>
     </div>
   </nav>
 
+  <!-- User Account Banner (When Logged In) -->
+  <div id="user-banner" class="hidden bg-indigo-900 text-white text-xs px-4 py-2 flex justify-between items-center">
+    <span>Logged in as: <strong id="user-email-display">user@domain.com</strong></span>
+    <button onclick="handleLogout()" class="underline text-indigo-200 hover:text-white">Log Out</button>
+  </div>
+
   <!-- ================= BUYER PORTAL ================= -->
   <main id="buyer-portal" class="max-w-md mx-auto my-4 p-2">
-    <!-- Sub-Nav -->
     <div class="flex justify-between items-center mb-3 bg-white p-2 rounded-lg shadow-sm">
       <button onclick="switchBuyerTab('feed')" class="font-bold text-sm text-indigo-600">Video Reels Feed</button>
       <button onclick="switchBuyerTab('cashback')" class="font-bold text-sm text-gray-600 hover:text-indigo-600">💰 Cashback Deals</button>
     </div>
 
-    <!-- Feed View -->
     <div id="buyer-feed-view">
       <div id="reels-feed" class="reel-container rounded-xl shadow-lg bg-black relative">
         <div class="p-8 text-center text-white">Loading dynamic feed...</div>
       </div>
     </div>
 
-    <!-- Cashback View -->
     <div id="buyer-cashback-view" class="hidden bg-white p-4 rounded-xl shadow space-y-3">
       <h3 class="font-bold text-lg text-indigo-900">VIP Cashback & Exclusive Deals</h3>
       <p class="text-xs text-gray-500">Premium Buyers earn up to 5% EcoCash cashback on selected promo items!</p>
@@ -59,57 +68,64 @@
 
   <!-- ================= SELLER PORTAL ================= -->
   <main id="seller-portal" class="hidden max-w-2xl mx-auto my-6 p-6 bg-white rounded-xl shadow-md">
-    <div class="flex justify-between items-center mb-6 pb-4 border-b">
-      <div>
-        <h2 class="text-2xl font-bold">Seller Dashboard & Studio</h2>
-        <p class="text-xs text-gray-500">Manage listings based on your subscription tier.</p>
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-gray-500 uppercase">Tier Simulator:</label>
-        <select id="seller-tier-select" onchange="updateSellerLimits()" class="p-1 text-xs border rounded bg-gray-50">
-          <option value="free">Free Starter ($0 - Max 1 Image)</option>
-          <option value="basic">Basic Local ($2.99/mo)</option>
-          <option value="pro" selected>Pro Seller ($9.99/mo - Video Reels)</option>
-          <option value="hybrid">Hybrid All-Access ($14.99/mo)</option>
-        </select>
-      </div>
+    <!-- Auth Shield Warning for Guests -->
+    <div id="seller-auth-shield" class="hidden p-6 text-center bg-amber-50 border border-amber-200 rounded-xl">
+      <h3 class="text-lg font-bold text-amber-900 mb-2">Seller Authentication Required</h3>
+      <p class="text-xs text-amber-700 mb-4">You must be signed in with a Seller or Hybrid account to access the Seller Studio.</p>
+      <button onclick="openAuthModal()" class="bg-amber-500 text-black font-bold px-4 py-2 rounded text-xs shadow">Login / Create Seller Account</button>
     </div>
 
-    <form id="seller-upload-form" onsubmit="handleSellerUpload(event)" class="space-y-4">
-      <div>
-        <label class="block text-xs font-bold mb-1">Product Title</label>
-        <input type="text" id="prod-title" placeholder="e.g. Leather Shoes" required class="w-full p-2 border rounded text-sm">
-      </div>
-      <div class="grid grid-cols-2 gap-4">
+    <div id="seller-dashboard-content">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b">
         <div>
-          <label class="block text-xs font-bold mb-1">Price ($ USD)</label>
-          <input type="number" step="0.01" id="prod-price" placeholder="15.00" required class="w-full p-2 border rounded text-sm">
+          <h2 class="text-2xl font-bold">Seller Dashboard & Studio</h2>
+          <p class="text-xs text-gray-500">Manage listings based on your subscription tier.</p>
         </div>
         <div>
-          <label class="block text-xs font-bold mb-1">Currency</label>
-          <select id="prod-curr" class="w-full p-2 border rounded text-sm">
-            <option value="USD">USD ($)</option>
-            <option value="ZiG">ZiG</option>
+          <label class="block text-xs font-bold text-gray-500 uppercase">Tier Simulator:</label>
+          <select id="seller-tier-select" onchange="updateSellerLimits()" class="p-1 text-xs border rounded bg-gray-50">
+            <option value="free">Free Starter ($0 - Max 1 Image)</option>
+            <option value="basic">Basic Local ($2.99/mo)</option>
+            <option value="pro" selected>Pro Seller ($9.99/mo - Video Reels)</option>
+            <option value="hybrid">Hybrid All-Access ($14.99/mo)</option>
           </select>
         </div>
       </div>
 
-      <!-- Image URL Slot (Free Version Default) -->
-      <div id="image-upload-field">
-        <label class="block text-xs font-bold mb-1">Product Image URL (1 Photo Limit for Free Tier)</label>
-        <input type="url" id="prod-image" placeholder="https://domain.com/image.jpg" class="w-full p-2 border rounded text-sm">
-      </div>
+      <form id="seller-upload-form" onsubmit="handleSellerUpload(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold mb-1">Product Title</label>
+          <input type="text" id="prod-title" placeholder="e.g. Leather Shoes" required class="w-full p-2 border rounded text-sm">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold mb-1">Price ($ USD)</label>
+            <input type="number" step="0.01" id="prod-price" placeholder="15.00" required class="w-full p-2 border rounded text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1">Currency</label>
+            <select id="prod-curr" class="w-full p-2 border rounded text-sm">
+              <option value="USD">USD ($)</option>
+              <option value="ZiG">ZiG</option>
+            </select>
+          </div>
+        </div>
 
-      <!-- Video Reel Link Slot (Pro/Hybrid Feature) -->
-      <div id="video-upload-field">
-        <label class="block text-xs font-bold mb-1 text-amber-600">MP4 Video Reel URL (Pro / Hybrid Tier Only)</label>
-        <input type="url" id="prod-video" placeholder="https://domain.com/video.mp4" class="w-full p-2 border rounded text-sm">
-      </div>
+        <div id="image-upload-field">
+          <label class="block text-xs font-bold mb-1">Product Image URL (1 Photo Limit for Free Tier)</label>
+          <input type="url" id="prod-image" placeholder="https://domain.com/image.jpg" class="w-full p-2 border rounded text-sm">
+        </div>
 
-      <button type="submit" id="seller-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg text-sm shadow">
-        Publish Listing to Marketplace
-      </button>
-    </form>
+        <div id="video-upload-field">
+          <label class="block text-xs font-bold mb-1 text-amber-600">MP4 Video Reel URL (Pro / Hybrid Tier Only)</label>
+          <input type="url" id="prod-video" placeholder="https://domain.com/video.mp4" class="w-full p-2 border rounded text-sm">
+        </div>
+
+        <button type="submit" id="seller-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg text-sm shadow">
+          Publish Listing to Marketplace
+        </button>
+      </form>
+    </div>
   </main>
 
   <!-- ================= SUBSCRIPTION PLANS ================= -->
@@ -118,7 +134,6 @@
     <p class="text-center text-gray-500 text-xs mb-6">Designed for buyers, individual sellers, and full enterprises</p>
 
     <div class="grid md:grid-cols-4 gap-4">
-      <!-- Free -->
       <div class="bg-white p-4 rounded-xl border flex flex-col justify-between">
         <div>
           <h3 class="font-bold text-gray-800">Free Starter</h3>
@@ -132,7 +147,6 @@
         <button onclick="switchPortal('seller')" class="mt-4 w-full bg-gray-200 text-gray-800 font-bold py-1.5 rounded text-xs">Start Free</button>
       </div>
 
-      <!-- Basic Local -->
       <div class="bg-white p-4 rounded-xl border border-indigo-200 shadow-sm flex flex-col justify-between">
         <div>
           <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded">Budget Option</span>
@@ -147,7 +161,6 @@
         <button class="mt-4 w-full bg-indigo-600 text-white font-bold py-1.5 rounded text-xs">Choose $2.99</button>
       </div>
 
-      <!-- Pro Seller -->
       <div class="bg-white p-4 rounded-xl border-2 border-amber-500 flex flex-col justify-between">
         <div>
           <span class="bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded">Popular</span>
@@ -162,7 +175,6 @@
         <button class="mt-4 w-full bg-amber-500 text-black font-bold py-1.5 rounded text-xs">Choose $9.99</button>
       </div>
 
-      <!-- Hybrid All-Access -->
       <div class="bg-slate-900 text-white p-4 rounded-xl border-2 border-indigo-500 flex flex-col justify-between">
         <div>
           <span class="bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">All-In-One</span>
@@ -179,6 +191,42 @@
       </div>
     </div>
   </section>
+
+  <!-- ================= AUTHENTICATION MODAL ================= -->
+  <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded-xl max-w-sm w-full relative shadow-2xl">
+      <button onclick="closeAuthModal()" class="absolute top-3 right-3 text-gray-400 hover:text-black text-lg">✕</button>
+      
+      <div class="flex justify-around mb-4 border-b pb-2">
+        <button id="tab-login" onclick="switchAuthMode('login')" class="font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 pb-1">Login</button>
+        <button id="tab-signup" onclick="switchAuthMode('signup')" class="font-bold text-sm text-gray-400 pb-1">Sign Up</button>
+      </div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold mb-1">Email Address</label>
+          <input type="email" id="auth-email" placeholder="name@domain.com" required class="w-full p-2 border rounded text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-bold mb-1">Password</label>
+          <input type="password" id="auth-password" placeholder="••••••••" required class="w-full p-2 border rounded text-xs">
+        </div>
+
+        <div id="signup-role-field" class="hidden">
+          <label class="block text-xs font-bold mb-1">Account Type</label>
+          <select id="auth-role" class="w-full p-2 border rounded text-xs bg-gray-50">
+            <option value="buyer">Buyer (Shop & Negotiate)</option>
+            <option value="seller">Seller (Store Owner)</option>
+            <option value="hybrid">Hybrid (Buyer + Seller VIP)</option>
+          </select>
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded text-xs shadow">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
 
   <!-- Price Negotiation & Paynow Modal -->
   <div id="paynow-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
@@ -203,9 +251,95 @@
 
   <script>
     const SUPABASE_URL = "https://kuvorxkuyijvntyrsdks.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_t-TmErHKkg9Cv2wZ94IKKw_cvXAYgUD";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentAuthMode = 'login';
+    let currentUser = null;
+
+    // Monitor Auth State Changes
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user || null;
+      updateUIForUser();
+    });
+
+    function updateUIForUser() {
+      const authBtn = document.getElementById('auth-btn');
+      const userBanner = document.getElementById('user-banner');
+      const userEmailDisplay = document.getElementById('user-email-display');
+      const sellerShield = document.getElementById('seller-auth-shield');
+      const sellerDashboard = document.getElementById('seller-dashboard-content');
+
+      if (currentUser) {
+        authBtn.innerText = "My Profile";
+        userBanner.classList.remove('hidden');
+        userEmailDisplay.innerText = currentUser.email;
+
+        sellerShield.classList.add('hidden');
+        sellerDashboard.classList.remove('hidden');
+      } else {
+        authBtn.innerText = "Login / Sign Up";
+        userBanner.classList.add('hidden');
+
+        sellerShield.classList.remove('hidden');
+        sellerDashboard.classList.add('hidden');
+      }
+    }
+
+    function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
+    function switchAuthMode(mode) {
+      currentAuthMode = mode;
+      const loginTab = document.getElementById('tab-login');
+      const signupTab = document.getElementById('tab-signup');
+      const signupRoleField = document.getElementById('signup-role-field');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      if (mode === 'signup') {
+        signupTab.className = "font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 pb-1";
+        loginTab.className = "font-bold text-sm text-gray-400 pb-1";
+        signupRoleField.classList.remove('hidden');
+        submitBtn.innerText = "Create Account";
+      } else {
+        loginTab.className = "font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 pb-1";
+        signupTab.className = "font-bold text-sm text-gray-400 pb-1";
+        signupRoleField.classList.add('hidden');
+        submitBtn.innerText = "Sign In";
+      }
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const role = document.getElementById('auth-role').value;
+
+      if (currentAuthMode === 'signup') {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: { data: { role: role } }
+        });
+        if (error) alert("Sign Up Error: " + error.message);
+        else {
+          alert("Account created successfully! Check your email to confirm registration.");
+          closeAuthModal();
+        }
+      } else {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) alert("Login Error: " + error.message);
+        else {
+          alert("Welcome back!");
+          closeAuthModal();
+        }
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      alert("Logged out successfully.");
+    }
 
     function switchPortal(portal) {
       document.getElementById('buyer-portal').classList.add('hidden');
