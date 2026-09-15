@@ -3,68 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZimMarket & Product Reviews</title>
+  <title>ZimMarket - Video Marketplace & Reviews</title>
   
+  <!-- Supabase JS SDK & Tailwind CSS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
-    /* Desktop vs Mobile reel height adjustment */
-    .reel-container { 
-      scroll-snap-type: y mandatory; 
-      overflow-y: scroll; 
-      height: 70vh; 
-    }
-    .reel-card { 
-      scroll-snap-align: start; 
-      height: 70vh; 
-    }
+    /* Custom Scrollbar & Snap Styles */
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
 
-  <!-- ================= TOP NAVIGATION BAR (Responsive for Phone/Tablet/Desktop) ================= -->
-  <nav class="bg-black text-white p-4 sticky top-0 z-50">
+  <!-- ================= TOP NAVIGATION BAR (Responsive: Phone / Tablet / Desktop) ================= -->
+  <nav class="bg-black text-white p-4 sticky top-0 z-50 shadow-md">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
       
+      <!-- Brand & Active Portal Badge -->
       <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
         <span class="text-xl font-bold tracking-wide text-amber-400">ZimMarket</span>
-        <span id="active-portal-badge" class="bg-indigo-600 text-xs px-2.5 py-1 rounded font-bold uppercase tracking-wider">Marketplace</span>
+        <span id="active-portal-badge" class="bg-indigo-600 text-white text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider">
+          🛒 Marketplace
+        </span>
       </div>
       
-      <!-- Responsive Portal Switcher Buttons -->
+      <!-- Portal Navigation Switcher -->
       <div class="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
         <button onclick="switchMainPortal('marketplace')" id="btn-portal-market" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
           🛒 Marketplace Portal
         </button>
         <button onclick="switchMainPortal('reviews')" id="btn-portal-reviews" class="bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          ⭐ Product Reviews Portal
+          ⭐ Verified Reviews
         </button>
         <button onclick="switchMainPortal('seller')" id="btn-portal-seller" class="bg-amber-500 text-black px-3 py-1.5 rounded-lg text-xs font-bold transition">
           🏪 Seller Studio
+        </button>
+        <button onclick="switchMainPortal('plans')" id="btn-portal-plans" class="bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+          💳 Subscription Plans
         </button>
       </div>
 
     </div>
   </nav>
 
-  <!-- ================= MAIN CONTAINER (Adapts across Mobile, Tablet, Desktop) ================= -->
-  <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
 
-    <!-- 1. MARKETPLACE PORTAL -->
+    <!-- ================= 1. MARKETPLACE PORTAL ================= -->
     <section id="portal-marketplace" class="space-y-6">
       
-      <!-- Filters (1 col on phone, 3 cols on desktop) -->
-      <div class="bg-white p-4 rounded-xl shadow-sm grid grid-cols-1 md:grid-cols-3 gap-3">
-        <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="🔍 Search marketplace..." class="p-2 border rounded-lg text-xs bg-gray-50">
-        <select id="category-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50">
+      <!-- Filters (1 col on Phone, 3 cols on Desktop) -->
+      <div class="bg-white p-4 rounded-xl shadow-sm grid grid-cols-1 md:grid-cols-3 gap-3 border border-gray-200">
+        <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="🔍 Search products or keywords..." class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <select id="category-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="">All Categories</option>
           <option value="Electronics">Electronics</option>
           <option value="Fashion">Fashion & Apparel</option>
           <option value="Solar">Solar & Power</option>
           <option value="Vehicles">Vehicles & Parts</option>
         </select>
-        <select id="location-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50">
+        <select id="location-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <option value="">All Locations</option>
           <option value="Harare">Harare</option>
           <option value="Bulawayo">Bulawayo</option>
@@ -73,73 +73,82 @@
         </select>
       </div>
 
-      <!-- Responsive Grid: Phone = 1 Reel Column, Tablet = 2 Columns, Desktop = 3 Columns -->
-      <div id="reels-feed" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="p-8 text-center text-gray-500 col-span-full">Loading listings...</div>
-      </div>
-    </section>
-
-
-    <!-- 2. REVIEWS PORTAL -->
-    <section id="portal-reviews" class="hidden space-y-6">
+      <!-- Feed & Orders Grid (1 Col Phone, 2 Cols Tablet, 3 Cols Desktop) -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Post Review Form (1 Column) -->
-        <div class="bg-white p-6 rounded-xl shadow-sm space-y-4">
-          <h3 class="font-bold text-lg text-indigo-900 border-b pb-2">Leave a Product Review</h3>
-          <form onsubmit="submitReview(event)" class="space-y-3">
-            <div>
-              <label class="block text-xs font-bold mb-1">Product Name</label>
-              <input type="text" id="rev-product" placeholder="e.g. 450W Solar Panel" required class="w-full p-2 border rounded text-xs bg-gray-50">
-            </div>
-            <div>
-              <label class="block text-xs font-bold mb-1">Your Name / Alias</label>
-              <input type="text" id="rev-name" placeholder="e.g. Alex M." required class="w-full p-2 border rounded text-xs bg-gray-50">
-            </div>
-            <div>
-              <label class="block text-xs font-bold mb-1">Rating</label>
-              <select id="rev-rating" class="w-full p-2 border rounded text-xs bg-gray-50">
-                <option value="5">⭐⭐⭐⭐⭐ (5/5 Excellent)</option>
-                <option value="4">⭐⭐⭐⭐ (4/5 Good)</option>
-                <option value="3">⭐⭐⭐ (3/5 Average)</option>
-                <option value="2">⭐⭐ (2/5 Poor)</option>
-                <option value="1">⭐ (1/5 Terible)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold mb-1">Detailed Feedback</label>
-              <textarea id="rev-text" rows="3" placeholder="Write your experience..." required class="w-full p-2 border rounded text-xs bg-gray-50"></textarea>
-            </div>
-            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded text-xs shadow">
-              Publish Review
-            </button>
-          </form>
-        </div>
-
-        <!-- Live Review Feed (2 Columns on Desktop, 1 on Mobile) -->
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm space-y-4">
-          <h3 class="font-bold text-lg text-indigo-900 border-b pb-2">Community Reviews & Experiences</h3>
-          <div id="reviews-feed-list" class="space-y-3">
-            <p class="text-xs text-gray-400">Loading buyer reviews...</p>
+        <!-- Marketplace Product Feed (2 Columns on Desktop) -->
+        <div class="lg:col-span-2 space-y-4">
+          <h2 class="text-lg font-bold text-gray-800 flex items-center justify-between">
+            <span>Featured Video & Photo Feed</span>
+            <span class="text-xs text-gray-500 font-normal">Real-time active listings</span>
+          </h2>
+          <div id="reels-feed" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-8 text-center text-gray-500 col-span-full">Loading listings...</div>
           </div>
         </div>
 
+        <!-- Orders & Live Chat Sidebar (1 Column on Desktop) -->
+        <div class="space-y-6">
+          
+          <!-- My Orders / Purchases Box -->
+          <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 mb-3">📦 My Recent Orders & Status</h3>
+            <div id="buyer-orders-list" class="space-y-2 max-h-60 overflow-y-auto custom-scroll">
+              <p class="text-xs text-gray-400">Loading order history...</p>
+            </div>
+          </div>
+
+          <!-- Live Chat Box -->
+          <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col h-80">
+            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 mb-2">💬 Marketplace Live Chat</h3>
+            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-2 p-2 bg-gray-50 rounded custom-scroll text-xs">
+              <p class="text-gray-400 text-center py-4">No messages yet...</p>
+            </div>
+            <form onsubmit="sendChatMessage(event)" class="mt-2 flex gap-2">
+              <input type="text" id="chat-input" placeholder="Type a message..." required class="flex-1 p-2 border rounded text-xs bg-white focus:outline-none">
+              <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded font-bold text-xs">Send</button>
+            </form>
+          </div>
+
+        </div>
+
       </div>
     </section>
 
 
-    <!-- 3. SELLER STUDIO PORTAL -->
-    <section id="portal-seller" class="hidden bg-white p-6 rounded-xl shadow-sm max-w-2xl mx-auto space-y-4">
-      <h2 class="text-xl font-bold border-b pb-2">Seller Studio</h2>
-      <form onsubmit="handleSellerUpload(event)" class="space-y-3">
+    <!-- ================= 2. VERIFIED REVIEWS PORTAL ================= -->
+    <section id="portal-reviews" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="border-b pb-4 mb-6">
+          <h2 class="text-2xl font-black text-indigo-950">⭐ Verified Buyer & Supplier Reviews</h2>
+          <p class="text-xs text-gray-500 mt-1">Authentic experiences and multi-criteria ratings submitted by buyers after payment completion.</p>
+        </div>
+
+        <!-- Live Community Reviews Feed -->
+        <div id="reviews-feed-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <p class="text-xs text-gray-400 col-span-full">Loading verified reviews...</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================= 3. SELLER STUDIO PORTAL ================= -->
+    <section id="portal-seller" class="hidden max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+      <div class="border-b pb-2">
+        <h2 class="text-xl font-bold text-gray-900">🏪 Seller Studio</h2>
+        <p class="text-xs text-gray-500">Post product images, video reels, and manage your inventory</p>
+      </div>
+
+      <form onsubmit="handleSellerUpload(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold mb-1">Product Title</label>
-          <input type="text" id="prod-title" required class="w-full p-2 border rounded text-xs">
+          <input type="text" id="prod-title" placeholder="e.g. Leather Jacket / 450W Solar Panel" required class="w-full p-2 border rounded text-xs bg-gray-50">
         </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold mb-1">Price ($ USD)</label>
-            <input type="number" id="prod-price" required class="w-full p-2 border rounded text-xs">
+            <input type="number" id="prod-price" placeholder="89" required class="w-full p-2 border rounded text-xs bg-gray-50">
           </div>
           <div>
             <label class="block text-xs font-bold mb-1">Category</label>
@@ -151,52 +160,248 @@
             </select>
           </div>
         </div>
-        <button type="submit" class="w-full bg-amber-500 text-black font-bold py-2 rounded text-xs">Publish Item</button>
+
+        <div>
+          <label class="block text-xs font-bold mb-1">City / Location</label>
+          <select id="prod-location" class="w-full p-2 border rounded text-xs bg-gray-50">
+            <option value="Harare">Harare</option>
+            <option value="Bulawayo">Bulawayo</option>
+            <option value="Gweru">Gweru</option>
+            <option value="Mutare">Mutare</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold mb-1">Product Photo File</label>
+          <input type="file" id="prod-photo" accept="image/*" class="w-full text-xs text-gray-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold mb-1">Video Reel File (.mp4 - Pro Plan)</label>
+          <input type="file" id="prod-video" accept="video/mp4" class="w-full text-xs text-gray-500">
+        </div>
+
+        <button type="submit" id="btn-upload" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-lg text-xs shadow transition">
+          Publish Listing to Marketplace
+        </button>
       </form>
     </section>
 
+
+    <!-- ================= 4. SUBSCRIPTION PLANS SECTION ================= -->
+    <section id="portal-plans" class="hidden space-y-6">
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-900">Seller Subscription Plans</h2>
+        <p class="text-xs text-gray-500 mt-1">Choose the optimal plan to scale your store and attract buyers across Zimbabwe</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Free Starter Plan -->
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Starter</span>
+            <h3 class="text-2xl font-black mt-2">$0.00 <span class="text-xs font-normal text-gray-500">/ forever</span></h3>
+            <p class="text-xs text-gray-600 font-bold mt-2 border-b pb-2">Basic Marketplace Listing Access</p>
+            
+            <ul class="text-xs text-gray-600 space-y-2.5 mt-3">
+              <li class="flex items-start">
+                <span class="text-green-500 font-bold mr-1.5">✓</span>
+                <div><strong>Photo Listings Only:</strong> Ideal for casual individuals listing basic items.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 font-bold mr-1.5">✓</span>
+                <div><strong>Standard Search Reach:</strong> Included in general search & category filters.</div>
+              </li>
+              <li class="flex items-start text-gray-400">
+                <span class="font-bold mr-1.5">✕</span>
+                <div><strong>No Video Reels:</strong> Upgrade to Pro to unlock MP4 video reel uploads.</div>
+              </li>
+            </ul>
+          </div>
+          <button onclick="switchMainPortal('seller')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">
+            Start Free Account
+          </button>
+        </div>
+
+        <!-- Pro Business Plan -->
+        <div class="bg-white p-6 rounded-xl border-2 border-amber-500 shadow-md flex flex-col justify-between space-y-4 relative">
+          <span class="absolute -top-3 right-4 bg-amber-500 text-black text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full shadow">Most Popular</span>
+          <div>
+            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Pro Business</span>
+            <h3 class="text-2xl font-black mt-2">$2.99 <span class="text-xs font-normal text-gray-500">/ month</span></h3>
+            <p class="text-xs text-amber-700 font-bold mt-2 border-b pb-2">Full Video Reels Studio Access</p>
+            
+            <ul class="text-xs text-gray-600 space-y-2.5 mt-3">
+              <li class="flex items-start">
+                <span class="text-green-500 font-bold mr-1.5">✓</span>
+                <div><strong>HD Video Reel Clips:</strong> Upload 60-second video feeds to boost buyer engagement.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 font-bold mr-1.5">✓</span>
+                <div><strong>Instant WhatsApp Alerts:</strong> Direct WhatsApp lead routing straight to your phone.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 font-bold mr-1.5">✓</span>
+                <div><strong>Verified Store Badge:</strong> Builds buyer trust and increases sales conversion.</div>
+              </li>
+            </ul>
+          </div>
+          <button onclick="switchMainPortal('seller')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2 rounded-lg text-xs shadow transition">
+            Subscribe to Pro Plan
+          </button>
+        </div>
+
+        <!-- VIP Enterprise Plan -->
+        <div class="bg-slate-900 text-white p-6 rounded-xl border border-slate-800 shadow-xl flex flex-col justify-between space-y-4">
+          <div>
+            <span class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">VIP Enterprise</span>
+            <h3 class="text-2xl font-black mt-2 text-indigo-400">$9.99 <span class="text-xs font-normal text-gray-400">/ month</span></h3>
+            <p class="text-xs text-indigo-300 font-bold mt-2 border-b border-slate-800 pb-2">Priority Feed Placement & Analytics</p>
+            
+            <ul class="text-xs text-slate-300 space-y-2.5 mt-3">
+              <li class="flex items-start">
+                <span class="text-indigo-400 font-bold mr-1.5">✓</span>
+                <div><strong>Priority Feed Placement:</strong> Positioned at the top of buyer video feeds.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-indigo-400 font-bold mr-1.5">✓</span>
+                <div><strong>Unlimited Listings & Reels:</strong> Scale unlimited product inventory without caps.</div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-indigo-400 font-bold mr-1.5">✓</span>
+                <div><strong>Realtime Analytics:</strong> Track views, customer inquiry conversion, and performance.</div>
+              </li>
+            </ul>
+          </div>
+          <button onclick="switchMainPortal('seller')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-2 rounded-lg text-xs shadow transition">
+            Get VIP Hybrid Access
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ================= VERIFIED POST-PAYMENT REVIEW MODAL ================= -->
+  <div id="verified-review-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+    <div class="bg-white p-6 rounded-xl max-w-md w-full relative shadow-2xl space-y-4">
+      <div class="border-b pb-2">
+        <h3 class="text-lg font-bold text-indigo-950">Leave Verified Purchase Review</h3>
+        <p id="rev-modal-product" class="text-xs text-amber-600 font-bold mt-0.5"></p>
+      </div>
+      
+      <form onsubmit="submitVerifiedReview(event)" class="space-y-4">
+        <!-- Multi-Criteria Ratings -->
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold mb-1">Product Quality</label>
+            <select id="rev-prod-rating" class="w-full p-1.5 border rounded text-xs bg-gray-50">
+              <option value="5">5 ⭐⭐⭐⭐⭐</option>
+              <option value="4">4 ⭐⭐⭐⭐</option>
+              <option value="3">3 ⭐⭐⭐</option>
+              <option value="2">2 ⭐⭐</option>
+              <option value="1">1 ⭐</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold mb-1">Supplier Trust</label>
+            <select id="rev-supp-rating" class="w-full p-1.5 border rounded text-xs bg-gray-50">
+              <option value="5">5 ⭐⭐⭐⭐⭐</option>
+              <option value="4">4 ⭐⭐⭐⭐</option>
+              <option value="3">3 ⭐⭐⭐</option>
+              <option value="2">2 ⭐⭐</option>
+              <option value="1">1 ⭐</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold mb-1">Delivery Speed</label>
+            <select id="rev-del-rating" class="w-full p-1.5 border rounded text-xs bg-gray-50">
+              <option value="5">5 ⭐⭐⭐⭐⭐</option>
+              <option value="4">4 ⭐⭐⭐⭐</option>
+              <option value="3">3 ⭐⭐⭐</option>
+              <option value="2">2 ⭐⭐</option>
+              <option value="1">1 ⭐</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold mb-1">Your Written Experience</label>
+          <textarea id="rev-modal-text" rows="3" placeholder="How was the product quality and dealing with this supplier?" required class="w-full p-2 border rounded text-xs bg-gray-50 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex space-x-2 pt-2">
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-lg text-xs shadow transition">
+            Publish Rating
+          </button>
+          <button type="button" onclick="document.getElementById('verified-review-modal').classList.add('hidden')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-lg text-xs transition">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
+
+  <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
   <script>
+    // Supabase Configuration
     const SUPABASE_URL = "https://kuvorxkuyijvntyrsdks.supabase.co";
-    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE"; // Replace with your anon key
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allProducts = [];
+    let activeReviewOrderId = null;
 
-    // Switch between Marketplace, Reviews, and Seller portals
+    // --- Portal Navigation Logic ---
     function switchMainPortal(portal) {
       document.getElementById('portal-marketplace').classList.add('hidden');
       document.getElementById('portal-reviews').classList.add('hidden');
       document.getElementById('portal-seller').classList.add('hidden');
+      document.getElementById('portal-plans').classList.add('hidden');
 
-      document.getElementById('btn-portal-market').className = "bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
-      document.getElementById('btn-portal-reviews').className = "bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
-      document.getElementById('btn-portal-seller').className = "bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
-
+      const btnMarket = document.getElementById('btn-portal-market');
+      const btnReviews = document.getElementById('btn-portal-reviews');
+      const btnSeller = document.getElementById('btn-portal-seller');
+      const btnPlans = document.getElementById('btn-portal-plans');
       const badge = document.getElementById('active-portal-badge');
+
+      btnMarket.className = "bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
+      btnReviews.className = "bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
+      btnSeller.className = "bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
+      btnPlans.className = "bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
 
       if (portal === 'marketplace') {
         document.getElementById('portal-marketplace').classList.remove('hidden');
-        document.getElementById('btn-portal-market').className = "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
-        badge.innerText = "Marketplace";
-        badge.className = "bg-indigo-600 text-white text-xs px-2.5 py-1 rounded font-bold uppercase tracking-wider";
+        btnMarket.className = "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
+        badge.innerText = "🛒 Marketplace";
+        badge.className = "bg-indigo-600 text-white text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider";
         loadProducts();
+        loadOrders();
+        loadChatMessages();
       } else if (portal === 'reviews') {
         document.getElementById('portal-reviews').classList.remove('hidden');
-        document.getElementById('btn-portal-reviews').className = "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
-        badge.innerText = "Reviews Portal";
-        badge.className = "bg-purple-600 text-white text-xs px-2.5 py-1 rounded font-bold uppercase tracking-wider";
+        btnReviews.className = "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
+        badge.innerText = "⭐ Verified Reviews";
+        badge.className = "bg-purple-600 text-white text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider";
         loadReviews();
       } else if (portal === 'seller') {
         document.getElementById('portal-seller').classList.remove('hidden');
-        document.getElementById('btn-portal-seller').className = "bg-amber-500 text-black px-3 py-1.5 rounded-lg text-xs font-bold transition";
-        badge.innerText = "Seller Studio";
-        badge.className = "bg-amber-500 text-black text-xs px-2.5 py-1 rounded font-bold uppercase tracking-wider";
+        btnSeller.className = "bg-amber-500 text-black px-3 py-1.5 rounded-lg text-xs font-bold transition";
+        badge.innerText = "🏪 Seller Studio";
+        badge.className = "bg-amber-500 text-black text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider";
+      } else if (portal === 'plans') {
+        document.getElementById('portal-plans').classList.remove('hidden');
+        btnPlans.className = "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition";
+        badge.innerText = "💳 Subscription Plans";
+        badge.className = "bg-emerald-600 text-white text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider";
       }
     }
 
-    // Load & Render Products
+    // --- Product Feed Functions ---
     async function loadProducts() {
       const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
       if (!error && data) {
@@ -213,8 +418,8 @@
       }
 
       feed.innerHTML = items.map(item => `
-        <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col justify-between">
-          <div class="h-48 bg-gray-200 relative">
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
+          <div class="h-48 bg-gray-100 relative">
             ${item.video_url 
               ? `<video class="w-full h-full object-cover" controls src="${item.video_url}"></video>`
               : `<img class="w-full h-full object-cover" src="${item.image_url || 'https://via.placeholder.com/300'}" alt="${item.title}">`
@@ -228,14 +433,15 @@
             </div>
             <div class="flex justify-between items-center pt-2 border-t">
               <span class="text-amber-600 font-extrabold text-sm">$${item.price} USD</span>
-              <button class="bg-green-600 hover:bg-green-500 text-white font-bold px-3 py-1.5 rounded text-xs">Buy / Negotiate</button>
+              <button onclick="triggerWhatsAppNegotiation('${item.title}', ${item.price})" class="bg-green-600 hover:bg-green-500 text-white font-bold px-3 py-1.5 rounded text-xs transition">
+                Buy / Negotiate
+              </button>
             </div>
           </div>
         </div>
       `).join('');
     }
 
-    // Filter Logic
     function applyFilters() {
       const q = document.getElementById('search-input').value.toLowerCase();
       const cat = document.getElementById('category-filter').value;
@@ -249,48 +455,185 @@
       renderProducts(filtered);
     }
 
-    // Reviews Portal Logic
+    function triggerWhatsAppNegotiation(title, price) {
+      const msg = encodeURIComponent(`Hi, I am interested in buying "${title}" listed for $${price} USD on ZimMarket.`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
+    // --- Order History & Post-Payment Review Triggers ---
+    async function loadOrders() {
+      const { data: orders } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+      const buyerList = document.getElementById('buyer-orders-list');
+      
+      if (!orders || orders.length === 0) {
+        buyerList.innerHTML = `<p class="text-xs text-gray-400">No orders recorded yet.</p>`;
+        return;
+      }
+
+      buyerList.innerHTML = orders.map(o => `
+        <div class="border p-2.5 rounded-lg flex justify-between items-center bg-gray-50 text-xs">
+          <div>
+            <h4 class="font-bold text-gray-800">${o.product_title || 'Item Purchase'}</h4>
+            <p class="text-gray-500">$${o.offer_price || '0'}.00 USD • <span class="font-semibold text-indigo-600">${o.status || 'Pending'}</span></p>
+          </div>
+          <div>
+            ${(o.status === 'Paid' || o.status === 'Completed' || o.status === 'Accepted') 
+              ? `<button onclick="openReviewModal('${o.id}', '${o.product_title || 'Product'}')" class="bg-amber-500 hover:bg-amber-400 text-black font-bold px-2.5 py-1 rounded text-[11px] shadow">⭐ Rate Supplier</button>`
+              : `<span class="text-gray-400 text-[10px] italic">Locked until paid</span>`
+            }
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openReviewModal(orderId, productTitle) {
+      activeReviewOrderId = orderId;
+      document.getElementById('rev-modal-product').innerText = productTitle;
+      document.getElementById('verified-review-modal').classList.remove('hidden');
+    }
+
+    async function submitVerifiedReview(e) {
+      e.preventDefault();
+      const product_name = document.getElementById('rev-modal-product').innerText;
+      const reviewer_name = 'Verified Buyer';
+      const product_rating = parseInt(document.getElementById('rev-prod-rating').value);
+      const supplier_rating = parseInt(document.getElementById('rev-supp-rating').value);
+      const delivery_rating = parseInt(document.getElementById('rev-del-rating').value);
+      const review_text = document.getElementById('rev-modal-text').value;
+
+      const { error } = await supabaseClient.from('reviews').insert([{
+        order_id: activeReviewOrderId,
+        product_name,
+        reviewer_name,
+        product_rating,
+        supplier_rating,
+        delivery_rating,
+        review_text
+      }]);
+
+      if (error) {
+        alert("Error submitting review: " + error.message);
+      } else {
+        alert("Thank you! Your verified review and seller rating have been published.");
+        document.getElementById('verified-review-modal').classList.add('hidden');
+        switchMainPortal('reviews');
+      }
+    }
+
+    // --- Reviews Portal Functions ---
     async function loadReviews() {
       const { data, error } = await supabaseClient.from('reviews').select('*').order('created_at', { ascending: false });
       const feed = document.getElementById('reviews-feed-list');
       
       if (error || !data || data.length === 0) {
-        feed.innerHTML = `<p class="text-xs text-gray-400">No reviews published yet. Be the first!</p>`;
+        feed.innerHTML = `<p class="text-xs text-gray-400 col-span-full">No verified reviews published yet.</p>`;
         return;
       }
 
       feed.innerHTML = data.map(r => `
-        <div class="p-4 border rounded-xl bg-gray-50 space-y-1">
-          <div class="flex justify-between items-center">
-            <h4 class="font-bold text-gray-900 text-xs">${r.product_name}</h4>
-            <span class="text-amber-500 text-xs">${'⭐'.repeat(r.rating)}</span>
+        <div class="p-4 border rounded-xl bg-gray-50 space-y-2">
+          <div class="flex justify-between items-start border-b pb-2">
+            <div>
+              <h4 class="font-bold text-gray-900 text-xs">${r.product_name}</h4>
+              <span class="text-[10px] text-indigo-600 font-bold">✔ Verified Purchase</span>
+            </div>
           </div>
-          <p class="text-gray-600 text-xs">${r.review_text}</p>
-          <span class="text-[10px] text-gray-400 block pt-1">— Reviewed by ${r.reviewer_name}</span>
+          
+          <div class="grid grid-cols-3 gap-1 text-[10px] bg-white p-2 rounded border">
+            <div><span class="text-gray-400 block">Product:</span> ${'⭐'.repeat(r.product_rating || 5)}</div>
+            <div><span class="text-gray-400 block">Supplier:</span> ${'⭐'.repeat(r.supplier_rating || 5)}</div>
+            <div><span class="text-gray-400 block">Delivery:</span> ${'⭐'.repeat(r.delivery_rating || 5)}</div>
+          </div>
+
+          <p class="text-gray-700 text-xs pt-1">${r.review_text}</p>
+          <span class="text-[10px] text-gray-400 block">— ${r.reviewer_name}</span>
         </div>
       `).join('');
     }
 
-    async function submitReview(e) {
-      e.preventDefault();
-      const product_name = document.getElementById('rev-product').value;
-      const reviewer_name = document.getElementById('rev-name').value;
-      const rating = parseInt(document.getElementById('rev-rating').value);
-      const review_text = document.getElementById('rev-text').value;
-
-      const { error } = await supabaseClient.from('reviews').insert([{ product_name, reviewer_name, rating, review_text }]);
-
-      if (error) {
-        alert("Failed to submit review: " + error.message);
-      } else {
-        alert("Review published!");
-        document.getElementById('rev-product').value = '';
-        document.getElementById('rev-text').value = '';
-        loadReviews();
+    // --- Live Chat Functions ---
+    async function loadChatMessages() {
+      const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
+      const box = document.getElementById('chat-messages');
+      if (data && data.length > 0) {
+        box.innerHTML = data.map(m => `
+          <div class="p-1.5 rounded bg-white border">
+            <span class="font-bold text-indigo-700 block text-[10px]">${m.sender_email || 'Guest'}</span>
+            <span>${m.text}</span>
+          </div>
+        `).join('');
+        box.scrollTop = box.scrollHeight;
       }
     }
 
+    async function sendChatMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const { error } = await supabaseClient.from('messages').insert([{ text, sender_email: 'Buyer' }]);
+      if (error) {
+        alert("Failed to send message: " + error.message);
+      } else {
+        input.value = '';
+        loadChatMessages();
+      }
+    }
+
+    // --- Seller Upload Function ---
+    async function handleSellerUpload(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-upload');
+      btn.innerText = "Uploading media...";
+      btn.disabled = true;
+
+      const title = document.getElementById('prod-title').value;
+      const price = parseFloat(document.getElementById('prod-price').value);
+      const category = document.getElementById('prod-category').value;
+      const location = document.getElementById('prod-location').value;
+      
+      const photoFile = document.getElementById('prod-photo').files[0];
+      const videoFile = document.getElementById('prod-video').files[0];
+
+      let image_url = null;
+      let video_url = null;
+
+      try {
+        if (photoFile) {
+          const path = `photos/${Date.now()}_${photoFile.name}`;
+          await supabaseClient.storage.from('marketplace-media').upload(path, photoFile);
+          const { data } = supabaseClient.storage.from('marketplace-media').getPublicUrl(path);
+          image_url = data.publicUrl;
+        }
+
+        if (videoFile) {
+          const path = `videos/${Date.now()}_${videoFile.name}`;
+          await supabaseClient.storage.from('marketplace-media').upload(path, videoFile);
+          const { data } = supabaseClient.storage.from('marketplace-media').getPublicUrl(path);
+          video_url = data.publicUrl;
+        }
+
+        const { error } = await supabaseClient.from('products').insert([{
+          title, price, category, location, image_url, video_url
+        }]);
+
+        if (error) throw error;
+
+        alert("Product successfully published to ZimMarket!");
+        switchMainPortal('marketplace');
+      } catch (err) {
+        alert("Upload error: " + err.message);
+      } finally {
+        btn.innerText = "Publish Listing to Marketplace";
+        btn.disabled = false;
+      }
+    }
+
+    // Initialize App View
     loadProducts();
+    loadOrders();
+    loadChatMessages();
   </script>
 </body>
 </html>
