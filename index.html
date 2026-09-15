@@ -3,399 +3,477 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZimMarket - Video Marketplace & Reviews</title>
+  <title>ZimMarket | Free Marketplace</title>
   
-  <!-- Supabase JS SDK & Tailwind CSS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <style>
-    .custom-scroll::-webkit-scrollbar { width: 6px; }
-    .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+    /* Hide scrollbars while allowing smooth scrolling */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .custom-scroll::-webkit-scrollbar { width: 5px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <!-- ================= TOP NAVIGATION BAR ================= -->
-  <nav class="bg-black text-white p-4 sticky top-0 z-40 shadow-md">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-      
-      <!-- Brand & Active Portal Badge -->
-      <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
-        <span class="text-xl font-bold tracking-wide text-amber-400">ZimMarket</span>
-        <span id="active-portal-badge" class="bg-indigo-600 text-white text-[10px] px-2.5 py-1 rounded font-bold uppercase tracking-wider">
-          🛒 Marketplace
-        </span>
+  <!-- ================= 1. TOP ANNOUNCEMENT & UTILITY BAR ================= -->
+  <div class="bg-black text-white text-[11px] py-1.5 px-4 flex justify-between items-center border-b border-gray-800">
+    <div class="flex items-center space-x-4">
+      <span>🚚 Free Shipping on Orders Over $30</span>
+      <span class="hidden md:inline text-gray-400">|</span>
+      <span class="hidden md:inline">⚡ Completely Free Marketplace Access</span>
+    </div>
+    
+    <div class="flex items-center space-x-4">
+      <!-- Language / Currency Selector -->
+      <div class="flex items-center space-x-1 cursor-pointer hover:text-amber-400 text-xs">
+        <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+        <span>USD $ | EN</span>
       </div>
+
+      <!-- Customer Service Direct Button -->
+      <button onclick="toggleChatbot()" class="flex items-center space-x-1 hover:text-amber-400 transition text-xs">
+        <i data-lucide="headphones" class="w-3.5 h-3.5"></i>
+        <span>Customer Service</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= 2. MAIN BRAND HEADER ================= -->
+  <header class="bg-white sticky top-0 z-40 shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       
-      <!-- Portal Switcher Buttons -->
-      <div class="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
-        <button onclick="switchMainPortal('marketplace')" id="btn-portal-market" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          🛒 Marketplace
+      <!-- Top Left: Company Brand Name -->
+      <div class="flex items-center space-x-2">
+        <a href="#" class="text-2xl font-black tracking-tight text-black flex items-center">
+          <span class="text-indigo-600">Zim</span>Market<span class="text-amber-500 text-3xl font-serif">.</span>
+        </a>
+      </div>
+
+      <!-- Center: Search Bar with Categories Filter -->
+      <div class="flex-1 max-w-2xl relative flex items-center">
+        <div class="flex w-full border-2 border-indigo-600 rounded-full overflow-hidden bg-gray-50 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-300">
+          <input 
+            type="text" 
+            id="search-input" 
+            onkeyup="handleSearch()"
+            placeholder="Search products, brands, or sellers..." 
+            class="w-full px-4 py-2 text-xs bg-transparent focus:outline-none"
+          >
+          <button onclick="handleSearch()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 flex items-center justify-center transition">
+            <i data-lucide="search" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Side Tools: Account Hover Menu, Wishlist & Cart -->
+      <div class="flex items-center space-x-6">
+        
+        <!-- Hover User Profile / Account Menu -->
+        <div class="relative group py-2">
+          <button class="flex items-center space-x-1 hover:text-indigo-600 transition">
+            <i data-lucide="user" class="w-6 h-6"></i>
+            <div class="text-left hidden sm:block">
+              <span class="block text-[10px] text-gray-400 leading-none">Welcome</span>
+              <span class="block text-xs font-bold leading-tight">Account <i data-lucide="chevron-down" class="inline w-3 h-3"></i></span>
+            </div>
+          </button>
+
+          <!-- Hover Dropdown Modal -->
+          <div class="absolute right-0 top-full hidden group-hover:block w-64 bg-white shadow-xl rounded-xl border border-gray-100 p-4 z-50 transition-all">
+            <div class="space-y-2 pb-3 border-b border-gray-100">
+              <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-xs transition">Sign In</button>
+              <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">Register Account</button>
+            </div>
+            
+            <ul class="py-2 text-xs space-y-1 text-gray-700">
+              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="package" class="w-4 h-4 text-indigo-600"></i><span>My Orders</span></a></li>
+              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="message-square" class="w-4 h-4 text-indigo-600"></i><span>My Messages</span></a></li>
+              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="ticket" class="w-4 h-4 text-indigo-600"></i><span>My Coupons</span></a></li>
+              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="coins" class="w-4 h-4 text-indigo-600"></i><span>My Points</span></a></li>
+              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50"><i data-lucide="clock" class="w-4 h-4 text-indigo-600"></i><span>Recently Viewed</span></a></li>
+              <li><a href="#" class="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-gray-50 border-t mt-1 pt-2"><i data-lucide="grid" class="w-4 h-4 text-indigo-600"></i><span>More Services</span></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Wishlist (Likes) Button -->
+        <button onclick="toggleWishlistDrawer()" class="relative hover:text-indigo-600 transition flex items-center">
+          <i data-lucide="heart" class="w-6 h-6"></i>
+          <span id="wishlist-count" class="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
         </button>
-        <button onclick="switchMainPortal('reviews')" id="btn-portal-reviews" class="bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          ⭐ Reviews Portal
+
+        <!-- Cart Button -->
+        <button onclick="toggleCartDrawer()" class="relative hover:text-indigo-600 transition flex items-center">
+          <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+          <span id="cart-count" class="absolute -top-1.5 -right-2 bg-indigo-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
         </button>
-        <button onclick="switchMainPortal('seller')" id="btn-portal-seller" class="bg-amber-500 text-black px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          🏪 Seller Studio
-        </button>
-        <button onclick="switchMainPortal('plans')" id="btn-portal-plans" class="bg-gray-800 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          💳 Plans & Pricing
-        </button>
+
       </div>
 
     </div>
-  </nav>
 
-  <!-- ================= MAIN CONTAINER ================= -->
-  <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-
-    <!-- ================= 1. MARKETPLACE PORTAL ================= -->
-    <section id="portal-marketplace" class="space-y-6">
-      
-      <!-- Filters -->
-      <div class="bg-white p-4 rounded-xl shadow-sm grid grid-cols-1 md:grid-cols-3 gap-3 border border-gray-200">
-        <input type="text" id="search-input" onkeyup="applyFilters()" placeholder="🔍 Search products or sellers..." class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        <select id="category-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="">All Categories</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Fashion">Fashion & Apparel</option>
-          <option value="Solar">Solar & Power</option>
-          <option value="Vehicles">Vehicles & Parts</option>
-        </select>
-        <select id="location-filter" onchange="applyFilters()" class="p-2 border rounded-lg text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="">All Locations</option>
-          <option value="Harare">Harare</option>
-          <option value="Bulawayo">Bulawayo</option>
-          <option value="Gweru">Gweru</option>
-          <option value="Mutare">Mutare</option>
-        </select>
-      </div>
-
-      <!-- Feed & Sidebar -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- ================= 3. CATEGORIES NAVIGATION SLIDER ================= -->
+    <div class="border-t border-gray-100 bg-white">
+      <div class="max-w-7xl mx-auto px-4 flex items-center relative">
         
-        <!-- Product Feed -->
-        <div class="lg:col-span-2 space-y-4">
-          <h2 class="text-lg font-bold text-gray-800 flex items-center justify-between">
-            <span>Featured Video & Photo Feed</span>
-            <span class="text-xs text-gray-500 font-normal">Click seller name to inspect reviews</span>
-          </h2>
-          <div id="reels-feed" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="p-8 text-center text-gray-500 col-span-full">Loading listings...</div>
-          </div>
-        </div>
-
-        <!-- Orders & Live Chat Sidebar -->
-        <div class="space-y-6">
-          
-          <!-- Order History -->
-          <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-            <h3 class="font-bold text-sm text-gray-800 border-b pb-2 mb-3">📦 My Order History</h3>
-            <p class="text-[11px] text-gray-500 mb-2">Reviews unlock only after successful purchase completion.</p>
-            <div id="buyer-orders-list" class="space-y-2 max-h-60 overflow-y-auto custom-scroll">
-              <p class="text-xs text-gray-400">Loading order history...</p>
-            </div>
-          </div>
-
-          <!-- Fixed Real-Time Live Chat Box -->
-          <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col h-80">
-            <div class="flex justify-between items-center border-b pb-2 mb-2">
-              <h3 class="font-bold text-sm text-gray-800">💬 Live Marketplace Chat</h3>
-              <span id="chat-status" class="text-[10px] text-green-600 font-bold bg-green-100 px-2 py-0.5 rounded-full">Connected</span>
-            </div>
-            
-            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-2 p-2 bg-gray-50 rounded custom-scroll text-xs">
-              <p class="text-gray-400 text-center py-4">Loading messages...</p>
-            </div>
-
-            <form onsubmit="sendChatMessage(event)" class="mt-2 flex gap-2">
-              <input type="text" id="chat-input" placeholder="Type a message..." required class="flex-1 p-2 border rounded text-xs bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
-              <button type="submit" id="btn-chat-send" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded font-bold text-xs transition">
-                Send
-              </button>
-            </form>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-
-    <!-- ================= 2. VERIFIED REVIEWS PORTAL ================= -->
-    <section id="portal-reviews" class="hidden space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-        <div class="border-b pb-4 mb-6">
-          <h2 class="text-2xl font-black text-indigo-950">⭐ All Verified Seller & Product Reviews</h2>
-          <p class="text-xs text-gray-500 mt-1">Submitted by customers after successful purchase completion.</p>
-        </div>
-
-        <div id="reviews-feed-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <p class="text-xs text-gray-400 col-span-full">Loading reviews...</p>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ================= 3. SELLER STUDIO PORTAL ================= -->
-    <section id="portal-seller" class="hidden max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
-      <div class="border-b pb-2">
-        <h2 class="text-xl font-bold text-gray-900">🏪 Seller Studio</h2>
-        <p class="text-xs text-gray-500">Post items and include your seller name for trust building</p>
-      </div>
-
-      <form onsubmit="handleSellerUpload(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold mb-1">Seller / Shop Name</label>
-          <input type="text" id="prod-seller-name" placeholder="e.g. Tashinga Electronics / Alex M." required class="w-full p-2 border rounded text-xs bg-gray-50">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1">Product Title</label>
-          <input type="text" id="prod-title" placeholder="e.g. Leather Jacket / 450W Solar Panel" required class="w-full p-2 border rounded text-xs bg-gray-50">
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-bold mb-1">Price ($ USD)</label>
-            <input type="number" id="prod-price" placeholder="89" required class="w-full p-2 border rounded text-xs bg-gray-50">
-          </div>
-          <div>
-            <label class="block text-xs font-bold mb-1">Category</label>
-            <select id="prod-category" class="w-full p-2 border rounded text-xs bg-gray-50">
-              <option value="Electronics">Electronics</option>
-              <option value="Fashion">Fashion & Apparel</option>
-              <option value="Solar">Solar & Power</option>
-              <option value="Vehicles">Vehicles & Parts</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1">City / Location</label>
-          <select id="prod-location" class="w-full p-2 border rounded text-xs bg-gray-50">
-            <option value="Harare">Harare</option>
-            <option value="Bulawayo">Bulawayo</option>
-            <option value="Gweru">Gweru</option>
-            <option value="Mutare">Mutare</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1">Product Photo File</label>
-          <input type="file" id="prod-photo" accept="image/*" class="w-full text-xs text-gray-500">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold mb-1">Video Reel File (.mp4)</label>
-          <input type="file" id="prod-video" accept="video/mp4" class="w-full text-xs text-gray-500">
-        </div>
-
-        <button type="submit" id="btn-upload" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2.5 rounded-lg text-xs shadow transition">
-          Publish Listing to Marketplace
+        <!-- Left Slider Arrow -->
+        <button onclick="slideCategories('left')" class="p-1 text-gray-400 hover:text-black z-10">
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </button>
-      </form>
-    </section>
 
-
-    <!-- ================= 4. SUBSCRIPTION PLANS SECTION ================= -->
-    <section id="portal-plans" class="hidden space-y-6">
-      <div class="text-center max-w-2xl mx-auto mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-900">Seller Subscription Plans</h2>
-        <p class="text-xs text-gray-500 mt-1">Choose the optimal plan to scale your store across Zimbabwe</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between space-y-4">
-          <div>
-            <span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Starter</span>
-            <h3 class="text-2xl font-black mt-2">$0.00 <span class="text-xs font-normal text-gray-500">/ forever</span></h3>
-            <p class="text-xs text-gray-600 font-bold mt-2 border-b pb-2">Basic Marketplace Access</p>
-            <ul class="text-xs text-gray-600 space-y-2.5 mt-3">
-              <li class="flex items-start"><span class="text-green-500 font-bold mr-1.5">✓</span>Photo Listings Only</li>
-              <li class="flex items-start"><span class="text-green-500 font-bold mr-1.5">✓</span>Standard Reach</li>
-            </ul>
-          </div>
-          <button onclick="switchMainPortal('seller')" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 rounded-lg text-xs transition">Start Free Account</button>
+        <!-- Scrollable Category Options -->
+        <div id="category-scroll" class="flex items-center space-x-6 overflow-x-auto no-scrollbar py-2.5 text-xs font-semibold whitespace-nowrap scroll-smooth flex-1 px-2">
+          <button onclick="filterCategory('All')" class="text-indigo-600 font-bold border-b-2 border-indigo-600 pb-0.5">Just For You</button>
+          <button onclick="filterCategory('New In')" class="text-rose-500 hover:text-indigo-600">🔥 New In</button>
+          <button onclick="filterCategory('Sales')" class="text-amber-600 font-bold hover:text-indigo-600">🏷️ Sales</button>
+          <button onclick="filterCategory('Womens Clothing')" class="text-gray-600 hover:text-indigo-600">Women's Clothing</button>
+          <button onclick="filterCategory('Kids')" class="text-gray-600 hover:text-indigo-600">Kids</button>
+          <button onclick="filterCategory('Mens Clothing')" class="text-gray-600 hover:text-indigo-600">Men's Clothing</button>
+          <button onclick="filterCategory('Underwear & Sleepwear')" class="text-gray-600 hover:text-indigo-600">Underwear & Sleepwear</button>
+          <button onclick="filterCategory('Shoes')" class="text-gray-600 hover:text-indigo-600">Shoes</button>
+          <button onclick="filterCategory('Home & Living')" class="text-gray-600 hover:text-indigo-600">Home & Living</button>
+          <button onclick="filterCategory('Jewelry')" class="text-gray-600 hover:text-indigo-600">Jewelry</button>
+          <button onclick="filterCategory('Accessories')" class="text-gray-600 hover:text-indigo-600">Accessories</button>
+          <button onclick="filterCategory('Sarees')" class="text-gray-600 hover:text-indigo-600">Sarees</button>
+          <button onclick="filterCategory('Beauty')" class="text-gray-600 hover:text-indigo-600">Beauty</button>
         </div>
 
-        <div class="bg-white p-6 rounded-xl border-2 border-amber-500 shadow-md flex flex-col justify-between space-y-4 relative">
-          <span class="absolute -top-3 right-4 bg-amber-500 text-black text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full shadow">Most Popular</span>
-          <div>
-            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Pro Business</span>
-            <h3 class="text-2xl font-black mt-2">$2.99 <span class="text-xs font-normal text-gray-500">/ month</span></h3>
-            <p class="text-xs text-amber-700 font-bold mt-2 border-b pb-2">Full Video Reels Studio Access</p>
-            <ul class="text-xs text-gray-600 space-y-2.5 mt-3">
-              <li class="flex items-start"><span class="text-green-500 font-bold mr-1.5">✓</span>HD Video Reels</li>
-              <li class="flex items-start"><span class="text-green-500 font-bold mr-1.5">✓</span>WhatsApp Direct Alerts</li>
-            </ul>
-          </div>
-          <button onclick="switchMainPortal('seller')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-2 rounded-lg text-xs shadow transition">Subscribe to Pro Plan</button>
-        </div>
-
-        <div class="bg-slate-900 text-white p-6 rounded-xl border border-slate-800 shadow-xl flex flex-col justify-between space-y-4">
-          <div>
-            <span class="bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">VIP Enterprise</span>
-            <h3 class="text-2xl font-black mt-2 text-indigo-400">$9.99 <span class="text-xs font-normal text-gray-400">/ month</span></h3>
-            <p class="text-xs text-indigo-300 font-bold mt-2 border-b border-slate-800 pb-2">Priority Feed & Analytics</p>
-            <ul class="text-xs text-slate-300 space-y-2.5 mt-3">
-              <li class="flex items-start"><span class="text-indigo-400 font-bold mr-1.5">✓</span>Priority Feed Placement</li>
-              <li class="flex items-start"><span class="text-indigo-400 font-bold mr-1.5">✓</span>Unlimited Listings</li>
-            </ul>
-          </div>
-          <button onclick="switchMainPortal('seller')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-2 rounded-lg text-xs shadow transition">Get VIP Access</button>
-        </div>
+        <!-- Right Slider Arrow -->
+        <button onclick="slideCategories('right')" class="p-1 text-gray-400 hover:text-black z-10">
+          <i data-lucide="chevron-right" class="w-5 h-5"></i>
+        </button>
 
       </div>
-    </section>
+    </div>
+  </header>
+
+  <!-- ================= 4. MAIN PRODUCT FEED & FILTERS ================= -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+    
+    <!-- Filter Controls Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-gray-200 mb-6 shadow-sm">
+      <div class="flex items-center space-x-2 text-xs font-bold text-gray-700">
+        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+        <span>Sort By:</span>
+        <select id="sort-select" onchange="applySorting()" class="bg-gray-100 p-1.5 rounded-lg border-none focus:outline-none text-xs">
+          <option value="featured">Featured Picks</option>
+          <option value="low-high">Price: Low to High</option>
+          <option value="high-low">Price: High to Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+      </div>
+
+      <div class="text-xs text-gray-500">
+        Showing <span id="product-count" class="font-bold text-black">0</span> verified items
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <!-- Product cards dynamically populated -->
+    </div>
 
   </main>
 
-  <!-- ================= SELLER REVIEWS MODAL ================= -->
-  <div id="seller-reviews-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-    <div class="bg-white p-6 rounded-xl max-w-lg w-full relative shadow-2xl space-y-4">
-      <div class="border-b pb-2 flex justify-between items-center">
-        <div>
-          <h3 id="modal-seller-name" class="text-lg font-bold text-indigo-950">Seller Reviews</h3>
-          <p class="text-xs text-gray-500">Past buyer experiences & trust score</p>
+  <!-- ================= 5. SLIDE-OVER CART DRAWER ================= -->
+  <div id="cart-drawer" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
+    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-4">
+      <div>
+        <div class="flex justify-between items-center border-b pb-3 mb-4">
+          <h3 class="font-bold text-lg text-gray-900 flex items-center space-x-2">
+            <i data-lucide="shopping-bag" class="w-5 h-5 text-indigo-600"></i>
+            <span>Your Cart</span>
+          </h3>
+          <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-black font-bold">✕</button>
         </div>
-        <button onclick="document.getElementById('seller-reviews-modal').classList.add('hidden')" class="text-gray-400 hover:text-black font-bold text-lg">✕</button>
+        <div id="cart-items-container" class="space-y-3 max-h-[60vh] overflow-y-auto custom-scroll">
+          <p class="text-xs text-gray-400 text-center py-8">Your cart is empty.</p>
+        </div>
       </div>
 
-      <div id="modal-seller-reviews-list" class="space-y-3 max-h-80 overflow-y-auto custom-scroll">
-        <p class="text-xs text-gray-400">Loading seller feedback...</p>
-      </div>
-
-      <div class="pt-2">
-        <button onclick="document.getElementById('seller-reviews-modal').classList.add('hidden')" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 rounded-lg text-xs">Close Profile</button>
+      <div class="border-t pt-4 space-y-3">
+        <div class="flex justify-between font-bold text-sm">
+          <span>Subtotal:</span>
+          <span id="cart-total" class="text-indigo-600">$0.00 USD</span>
+        </div>
+        <button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl text-xs transition shadow-md">
+          Proceed to Checkout
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= JAVASCRIPT ================= -->
+  <!-- ================= 6. SLIDE-OVER WISHLIST DRAWER ================= -->
+  <div id="wishlist-drawer" class="fixed inset-0 bg-black/50 z-50 hidden flex justify-end">
+    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-4">
+      <div>
+        <div class="flex justify-between items-center border-b pb-3 mb-4">
+          <h3 class="font-bold text-lg text-gray-900 flex items-center space-x-2">
+            <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i>
+            <span>Saved Likes</span>
+          </h3>
+          <button onclick="toggleWishlistDrawer()" class="text-gray-400 hover:text-black font-bold">✕</button>
+        </div>
+        <div id="wishlist-items-container" class="space-y-3 max-h-[70vh] overflow-y-auto custom-scroll">
+          <p class="text-xs text-gray-400 text-center py-8">No liked items yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 7. CUSTOMER SERVICE CHATBOT ================= -->
+  <div id="chatbot-widget" class="fixed bottom-4 right-4 z-50">
+    <!-- Trigger Floating Button -->
+    <button onclick="toggleChatbot()" class="bg-indigo-600 hover:bg-indigo-700 text-white p-3.5 rounded-full shadow-2xl flex items-center space-x-2">
+      <i data-lucide="message-circle" class="w-6 h-6"></i>
+      <span class="text-xs font-bold hidden sm:inline">Help & Support</span>
+    </button>
+
+    <!-- Chat Window Container -->
+    <div id="chat-window" class="hidden absolute bottom-16 right-0 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col h-96">
+      <div class="bg-indigo-600 text-white p-3 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="bot" class="w-5 h-5"></i>
+          <div>
+            <h4 class="font-bold text-xs">Customer Assistant</h4>
+            <span class="text-[9px] text-indigo-200">Online 24/7</span>
+          </div>
+        </div>
+        <button onclick="toggleChatbot()" class="text-white hover:text-gray-200">✕</button>
+      </div>
+
+      <div id="chat-messages" class="flex-1 p-3 overflow-y-auto custom-scroll space-y-2 text-xs bg-gray-50">
+        <div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700">
+          Hello! 👋 Welcome to ZimMarket. How can I help you with orders, shipping, or products today?
+        </div>
+      </div>
+
+      <form onsubmit="handleChatSubmit(event)" class="p-2 bg-white border-t flex gap-2">
+        <input type="text" id="chat-input" placeholder="Type a message..." required class="flex-1 text-xs border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-indigo-600">
+        <button type="submit" class="bg-indigo-600 text-white px-3 py-2 rounded-lg text-xs font-bold">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
-    const SUPABASE_URL = "https://kuvorxkuyijvntyrsdks.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_t-TmErHKkg9Cv2wZ94IKKw_cvXAYgUD";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Initialize Icons
+    lucide.createIcons();
 
-    let allProducts = [];
+    // Sample Products Data
+    const productsData = [
+      { id: 1, title: "Floral Summer Chiffon Dress", price: 18.99, category: "Womens Clothing", rating: 4.8, image: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400", seller: "Aeterna Apparel" },
+      { id: 2, title: "Classic Men's Slim Fit Jacket", price: 42.00, category: "Mens Clothing", rating: 4.6, image: "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=400", seller: "Rich Suiting" },
+      { id: 3, title: "Kids Denim dungarees Set", price: 15.50, category: "Kids", rating: 4.9, image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400", seller: "Junior Trends" },
+      { id: 4, title: "Leather Casual Sneakers", price: 34.99, category: "Shoes", rating: 4.7, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400", seller: "Footwear Co." },
+      { id: 5, title: "Gold Plated Pendant Necklace", price: 12.00, category: "Jewelry", rating: 4.5, image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400", seller: "FrameForge" },
+      { id: 6, title: "Traditional Designer Saree", price: 55.00, category: "Sarees", rating: 5.0, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", seller: "Royal Attire" },
+      { id: 7, title: "Satin Silk Pajama Set", price: 22.50, category: "Underwear & Sleepwear", rating: 4.4, image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400", seller: "Cozy Night" },
+      { id: 8, title: "Hydrating Facial Serum", price: 14.20, category: "Beauty", rating: 4.9, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400", seller: "Glow Essentials" }
+    ];
 
-    function switchMainPortal(portal) {
-      document.getElementById('portal-marketplace').classList.add('hidden');
-      document.getElementById('portal-reviews').classList.add('hidden');
-      document.getElementById('portal-seller').classList.add('hidden');
-      document.getElementById('portal-plans').classList.add('hidden');
+    let currentProducts = [...productsData];
+    let cart = [];
+    let wishlist = [];
 
-      if (portal === 'marketplace') {
-        document.getElementById('portal-marketplace').classList.remove('hidden');
-        loadProducts();
-        loadOrders();
-        loadChatMessages();
-      } else if (portal === 'reviews') {
-        document.getElementById('portal-reviews').classList.remove('hidden');
-        loadReviews();
-      } else if (portal === 'seller') {
-        document.getElementById('portal-seller').classList.remove('hidden');
-      } else if (portal === 'plans') {
-        document.getElementById('portal-plans').classList.remove('hidden');
-      }
-    }
-
-    // Load Products
-    async function loadProducts() {
-      const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-      if (!error && data) {
-        allProducts = data;
-        renderProducts(allProducts);
-      }
-    }
-
+    // Render Product Cards
     function renderProducts(items) {
-      const feed = document.getElementById('reels-feed');
-      if (!items || items.length === 0) {
-        feed.innerHTML = `<div class="p-8 text-center text-gray-400 col-span-full">No products found.</div>`;
+      const grid = document.getElementById('product-grid');
+      document.getElementById('product-count').innerText = items.length;
+
+      if (items.length === 0) {
+        grid.innerHTML = `<p class="col-span-full text-center text-xs text-gray-400 py-12">No products matched your search.</p>`;
         return;
       }
 
-      feed.innerHTML = items.map(item => `
-        <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 flex flex-col justify-between">
-          <div class="h-48 bg-gray-100 relative">
-            ${item.video_url 
-              ? `<video class="w-full h-full object-cover" controls src="${item.video_url}"></video>`
-              : `<img class="w-full h-full object-cover" src="${item.image_url || 'https://via.placeholder.com/300'}" alt="${item.title}">`
-            }
+      grid.innerHTML = items.map(p => `
+        <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col justify-between group">
+          <div class="relative aspect-square overflow-hidden bg-gray-100">
+            <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            
+            <!-- Wishlist Heart Button -->
+            <button onclick="toggleWishlist(${p.id})" class="absolute top-2 right-2 bg-white/80 backdrop-blur p-1.5 rounded-full hover:bg-white text-gray-600 hover:text-rose-500 transition">
+              <i data-lucide="heart" class="w-4 h-4 ${wishlist.some(w => w.id === p.id) ? 'fill-rose-500 text-rose-500' : ''}"></i>
+            </button>
           </div>
-          <div class="p-4 space-y-2">
-            <h4 class="font-bold text-gray-900 text-sm">${item.title}</h4>
-            <p class="text-xs text-indigo-700 font-bold cursor-pointer hover:underline" onclick="openSellerReviewsModal('${item.seller_name || 'Seller'}')">
-              👤 Seller: ${item.seller_name || 'Verified Seller'}
-            </p>
-            <div class="flex justify-between items-center pt-2 border-t">
-              <span class="text-amber-600 font-bold text-sm">$${item.price} USD</span>
-              <button onclick="triggerWhatsAppNegotiation('${item.title}', ${item.price}, '${item.seller_name || 'Seller'}')" class="bg-green-600 text-white px-2.5 py-1 rounded text-xs">Buy</button>
+
+          <div class="p-3 flex-1 flex flex-col justify-between space-y-2">
+            <div>
+              <span class="text-[10px] text-indigo-600 font-bold block">${p.seller}</span>
+              <h4 class="text-xs font-semibold text-gray-800 line-clamp-2 leading-snug">${p.title}</h4>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+              <div>
+                <span class="text-sm font-black text-gray-900">$${p.price.toFixed(2)}</span>
+                <span class="block text-[10px] text-amber-500 font-bold">⭐ ${p.rating}</span>
+              </div>
+
+              <button onclick="addToCart(${p.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition">
+                <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+              </button>
             </div>
           </div>
         </div>
       `).join('');
+
+      lucide.createIcons();
     }
 
-    // Fixed Live Chat Logic
-    async function loadChatMessages() {
-      const { data, error } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
-      const box = document.getElementById('chat-messages');
-      if (error) {
-        box.innerHTML = `<p class="text-red-500 text-center py-2 text-[11px]">Chat load issue: ${error.message}</p>`;
+    // Category Filter Function
+    function filterCategory(cat) {
+      if (cat === 'All' || cat === 'Just For You') {
+        currentProducts = [...productsData];
+      } else {
+        currentProducts = productsData.filter(p => p.category === cat);
+      }
+      renderProducts(currentProducts);
+    }
+
+    // Horizontal Scroll Slider
+    function slideCategories(direction) {
+      const container = document.getElementById('category-scroll');
+      container.scrollBy({ left: direction === 'left' ? -150 : 150, behavior: 'smooth' });
+    }
+
+    // Search Filter Function
+    function handleSearch() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const filtered = productsData.filter(p => 
+        p.title.toLowerCase().includes(query) || 
+        p.category.toLowerCase().includes(query) ||
+        p.seller.toLowerCase().includes(query)
+      );
+      renderProducts(filtered);
+    }
+
+    // Sorting Function
+    function applySorting() {
+      const sortVal = document.getElementById('sort-select').value;
+      let sorted = [...currentProducts];
+
+      if (sortVal === 'low-high') sorted.sort((a,b) => a.price - b.price);
+      if (sortVal === 'high-low') sorted.sort((a,b) => b.price - a.price);
+      if (sortVal === 'rating') sorted.sort((a,b) => b.rating - a.rating);
+
+      renderProducts(sorted);
+    }
+
+    // Cart Management
+    function addToCart(id) {
+      const prod = productsData.find(p => p.id === id);
+      cart.push(prod);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      document.getElementById('cart-count').innerText = cart.length;
+      const container = document.getElementById('cart-items-container');
+      const totalEl = document.getElementById('cart-total');
+
+      if (cart.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">Your cart is empty.</p>`;
+        totalEl.innerText = "$0.00 USD";
         return;
       }
-      if (data && data.length > 0) {
-        box.innerHTML = data.map(m => `
-          <div class="p-1.5 rounded bg-white border">
-            <span class="font-bold text-indigo-700 block text-[10px]">${m.sender_email || 'Buyer'}</span>
-            <span>${m.text}</span>
+
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      totalEl.innerText = `$${total.toFixed(2)} USD`;
+
+      container.innerHTML = cart.map((item, idx) => `
+        <div class="flex items-center space-x-3 p-2 border rounded-xl bg-gray-50">
+          <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg">
+          <div class="flex-1">
+            <h5 class="text-xs font-bold text-gray-800 line-clamp-1">${item.title}</h5>
+            <span class="text-xs font-black text-indigo-600">$${item.price.toFixed(2)}</span>
           </div>
-        `).join('');
-        box.scrollTop = box.scrollHeight;
-      } else {
-        box.innerHTML = `<p class="text-gray-400 text-center py-4">No messages yet. Send a message below!</p>`;
-      }
+          <button onclick="removeFromCart(${idx})" class="text-gray-400 hover:text-rose-500 font-bold text-xs">✕</button>
+        </div>
+      `).join('');
     }
 
-    async function sendChatMessage(e) {
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
+    function toggleCartDrawer() {
+      document.getElementById('cart-drawer').classList.toggle('hidden');
+    }
+
+    // Wishlist Management
+    function toggleWishlist(id) {
+      const idx = wishlist.findIndex(w => w.id === id);
+      if (idx > -1) {
+        wishlist.splice(idx, 1);
+      } else {
+        const prod = productsData.find(p => p.id === id);
+        wishlist.push(prod);
+      }
+      document.getElementById('wishlist-count').innerText = wishlist.length;
+      renderProducts(currentProducts);
+      updateWishlistUI();
+    }
+
+    function updateWishlistUI() {
+      const container = document.getElementById('wishlist-items-container');
+      if (wishlist.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">No liked items yet.</p>`;
+        return;
+      }
+      container.innerHTML = wishlist.map(item => `
+        <div class="flex items-center space-x-3 p-2 border rounded-xl bg-gray-50">
+          <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg">
+          <div class="flex-1">
+            <h5 class="text-xs font-bold text-gray-800 line-clamp-1">${item.title}</h5>
+            <span class="text-xs font-black text-indigo-600">$${item.price.toFixed(2)}</span>
+          </div>
+          <button onclick="addToCart(${item.id})" class="bg-indigo-600 text-white text-[10px] px-2 py-1 rounded">Move to Cart</button>
+        </div>
+      `).join('');
+    }
+
+    function toggleWishlistDrawer() {
+      document.getElementById('wishlist-drawer').classList.toggle('hidden');
+    }
+
+    // Chatbot Functions
+    function toggleChatbot() {
+      document.getElementById('chat-window').classList.toggle('hidden');
+    }
+
+    function handleChatSubmit(e) {
       e.preventDefault();
       const input = document.getElementById('chat-input');
-      const btn = document.getElementById('btn-chat-send');
-      const text = input.value.trim();
-      
-      if (!text) return;
+      const messages = document.getElementById('chat-messages');
 
-      btn.disabled = true;
-      btn.innerText = "Sending...";
+      if (!input.value.trim()) return;
 
-      const { error } = await supabaseClient.from('messages').insert([{ 
-        text: text, 
-        sender_email: 'Marketplace Guest' 
-      }]);
+      messages.innerHTML += `
+        <div class="bg-indigo-600 text-white p-2.5 rounded-xl border max-w-[85%] ml-auto text-xs">
+          ${input.value}
+        </div>
+      `;
 
-      if (error) {
-        alert("Chat Error: " + error.message + "\n\nFix: Ensure you ran 'ALTER TABLE public.messages DISABLE ROW LEVEL SECURITY;' in your Supabase SQL Editor.");
-      } else {
-        input.value = '';
-        await loadChatMessages();
-      }
+      const userMsg = input.value;
+      input.value = '';
 
-      btn.disabled = false;
-      btn.innerText = "Send";
+      setTimeout(() => {
+        messages.innerHTML += `
+          <div class="bg-white p-2.5 rounded-xl border max-w-[85%] text-gray-700 text-xs">
+            Thank you for reaching out regarding "${userMsg}". An online support agent will follow up shortly!
+          </div>
+        `;
+        messages.scrollTop = messages.scrollHeight;
+      }, 800);
     }
 
-    function triggerWhatsAppNegotiation(title, price, seller) {
-      const msg = encodeURIComponent(`Hi ${seller}, I am interested in buying "${title}" listed for $${price} USD on ZimMarket.`);
-      window.open(`https://wa.me/?text=${msg}`, '_blank');
-    }
-
-    loadProducts();
-    loadChatMessages();
+    // Initial Render
+    renderProducts(currentProducts);
   </script>
 </body>
 </html>
