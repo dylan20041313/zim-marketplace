@@ -25,14 +25,13 @@
       <button onclick="switchPortal('seller')" class="bg-amber-600 hover:bg-amber-500 px-3 py-1.5 rounded text-xs font-bold text-black">Seller Portal</button>
       <button onclick="switchTab('pricing')" class="bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-xs font-bold">Plans</button>
       
-      <!-- Auth Status Controls -->
       <div id="auth-controls" class="ml-2 pl-2 border-l border-gray-700">
         <button id="auth-btn" onclick="openAuthModal()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded text-xs font-bold">Login / Sign Up</button>
       </div>
     </div>
   </nav>
 
-  <!-- User Account Banner (When Logged In) -->
+  <!-- User Account Banner -->
   <div id="user-banner" class="hidden bg-indigo-900 text-white text-xs px-4 py-2 flex justify-between items-center">
     <span>Logged in as: <strong id="user-email-display">user@domain.com</strong></span>
     <button onclick="handleLogout()" class="underline text-indigo-200 hover:text-white">Log Out</button>
@@ -40,17 +39,28 @@
 
   <!-- ================= BUYER PORTAL ================= -->
   <main id="buyer-portal" class="max-w-md mx-auto my-4 p-2">
-    <div class="flex justify-between items-center mb-3 bg-white p-2 rounded-lg shadow-sm">
-      <button onclick="switchBuyerTab('feed')" class="font-bold text-sm text-indigo-600">Video Reels Feed</button>
-      <button onclick="switchBuyerTab('cashback')" class="font-bold text-sm text-gray-600 hover:text-indigo-600">💰 Cashback Deals</button>
+    <div class="flex justify-between items-center mb-3 bg-white p-2 rounded-lg shadow-sm text-xs font-bold">
+      <button onclick="switchBuyerTab('feed')" class="text-indigo-600">Video Reels Feed</button>
+      <button onclick="switchBuyerTab('orders')" class="text-gray-600 hover:text-indigo-600">📦 My Orders</button>
+      <button onclick="switchBuyerTab('cashback')" class="text-gray-600 hover:text-indigo-600">💰 Cashback</button>
     </div>
 
+    <!-- Feed View -->
     <div id="buyer-feed-view">
       <div id="reels-feed" class="reel-container rounded-xl shadow-lg bg-black relative">
         <div class="p-8 text-center text-white">Loading dynamic feed...</div>
       </div>
     </div>
 
+    <!-- Orders View -->
+    <div id="buyer-orders-view" class="hidden bg-white p-4 rounded-xl shadow space-y-3">
+      <h3 class="font-bold text-lg text-indigo-900">My Orders & Offers</h3>
+      <div id="buyer-orders-list" class="space-y-2">
+        <p class="text-xs text-gray-500">No active orders yet. Explore the feed to place an offer!</p>
+      </div>
+    </div>
+
+    <!-- Cashback View -->
     <div id="buyer-cashback-view" class="hidden bg-white p-4 rounded-xl shadow space-y-3">
       <h3 class="font-bold text-lg text-indigo-900">VIP Cashback & Exclusive Deals</h3>
       <p class="text-xs text-gray-500">Premium Buyers earn up to 5% EcoCash cashback on selected promo items!</p>
@@ -68,7 +78,6 @@
 
   <!-- ================= SELLER PORTAL ================= -->
   <main id="seller-portal" class="hidden max-w-2xl mx-auto my-6 p-6 bg-white rounded-xl shadow-md">
-    <!-- Auth Shield Warning for Guests -->
     <div id="seller-auth-shield" class="hidden p-6 text-center bg-amber-50 border border-amber-200 rounded-xl">
       <h3 class="text-lg font-bold text-amber-900 mb-2">Seller Authentication Required</h3>
       <p class="text-xs text-amber-700 mb-4">You must be signed in with a Seller or Hybrid account to access the Seller Studio.</p>
@@ -79,10 +88,9 @@
       <div class="flex justify-between items-center mb-6 pb-4 border-b">
         <div>
           <h2 class="text-2xl font-bold">Seller Dashboard & Studio</h2>
-          <p class="text-xs text-gray-500">Manage listings based on your subscription tier.</p>
+          <p class="text-xs text-gray-500">Manage listings and view incoming buyer negotiations.</p>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-500 uppercase">Tier Simulator:</label>
           <select id="seller-tier-select" onchange="updateSellerLimits()" class="p-1 text-xs border rounded bg-gray-50">
             <option value="free">Free Starter ($0 - Max 1 Image)</option>
             <option value="basic">Basic Local ($2.99/mo)</option>
@@ -92,6 +100,13 @@
         </div>
       </div>
 
+      <!-- Seller Sub-Tabs -->
+      <div class="flex space-x-4 mb-4 border-b pb-2">
+        <button onclick="switchSellerSubTab('upload')" class="font-bold text-xs text-amber-600 border-b-2 border-amber-600 pb-1">Upload New Item</button>
+        <button onclick="switchSellerSubTab('orders')" class="font-bold text-xs text-gray-500 hover:text-amber-600 pb-1">Incoming Buyer Offers</button>
+      </div>
+
+      <!-- Upload Form -->
       <form id="seller-upload-form" onsubmit="handleSellerUpload(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold mb-1">Product Title</label>
@@ -121,14 +136,29 @@
           <input type="url" id="prod-video" placeholder="https://domain.com/video.mp4" class="w-full p-2 border rounded text-sm">
         </div>
 
-        <button type="submit" id="seller-submit-btn" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg text-sm shadow">
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg text-sm shadow">
           Publish Listing to Marketplace
         </button>
       </form>
+
+      <!-- Incoming Offers Desk -->
+      <div id="seller-orders-desk" class="hidden space-y-3">
+        <h4 class="font-bold text-sm text-gray-800">Pending Negotiations & Orders</h4>
+        <div class="border p-3 rounded-lg bg-gray-50 flex justify-between items-center text-xs">
+          <div>
+            <p class="font-bold">Sneaker Hub Harare</p>
+            <p class="text-gray-500">Buyer Offer: <span class="text-green-600 font-bold">$40.00 USD</span> (Listed: $45.00)</p>
+          </div>
+          <div class="space-x-1">
+            <button onclick="alert('Offer Accepted! Customer notified via SMS/WhatsApp.')" class="bg-green-600 text-white font-bold px-2 py-1 rounded">Accept</button>
+            <button onclick="alert('Counter offer sent to buyer.')" class="bg-gray-300 text-gray-700 font-bold px-2 py-1 rounded">Decline</button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
-  <!-- ================= SUBSCRIPTION PLANS ================= -->
+  <!-- SUBSCRIPTION PLANS -->
   <section id="pricing-section" class="hidden max-w-5xl mx-auto my-8 p-4">
     <h2 class="text-2xl font-bold text-center mb-1">Flexible Zimbabwean Pricing Tiers</h2>
     <p class="text-center text-gray-500 text-xs mb-6">Designed for buyers, individual sellers, and full enterprises</p>
@@ -192,7 +222,7 @@
     </div>
   </section>
 
-  <!-- ================= AUTHENTICATION MODAL ================= -->
+  <!-- AUTHENTICATION MODAL -->
   <div id="auth-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
     <div class="bg-white p-6 rounded-xl max-w-sm w-full relative shadow-2xl">
       <button onclick="closeAuthModal()" class="absolute top-3 right-3 text-gray-400 hover:text-black text-lg">✕</button>
@@ -244,8 +274,9 @@
       
       <div class="flex space-x-2">
         <button onclick="processMobilePayment()" class="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">Pay EcoCash</button>
-        <button onclick="closePaynowModal()" class="w-full bg-gray-300 text-gray-700 font-bold py-2 rounded text-xs">Cancel</button>
+        <button onclick="openWhatsAppNegotiation()" class="w-full bg-emerald-600 text-white font-bold py-2 rounded text-xs">WhatsApp Offer</button>
       </div>
+      <button onclick="closePaynowModal()" class="w-full mt-2 bg-gray-200 text-gray-700 font-bold py-1.5 rounded text-xs">Cancel</button>
     </div>
   </div>
 
@@ -256,8 +287,8 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let currentAuthMode = 'login';
     let currentUser = null;
+    let selectedProductForOffer = { title: '', price: 0 };
 
-    // Monitor Auth State Changes
     supabaseClient.auth.onAuthStateChange((event, session) => {
       currentUser = session?.user || null;
       updateUIForUser();
@@ -274,13 +305,11 @@
         authBtn.innerText = "My Profile";
         userBanner.classList.remove('hidden');
         userEmailDisplay.innerText = currentUser.email;
-
         sellerShield.classList.add('hidden');
         sellerDashboard.classList.remove('hidden');
       } else {
         authBtn.innerText = "Login / Sign Up";
         userBanner.classList.add('hidden');
-
         sellerShield.classList.remove('hidden');
         sellerDashboard.classList.add('hidden');
       }
@@ -317,13 +346,11 @@
 
       if (currentAuthMode === 'signup') {
         const { data, error } = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: { data: { role: role } }
+          email, password, options: { data: { role: role } }
         });
         if (error) alert("Sign Up Error: " + error.message);
         else {
-          alert("Account created successfully! Check your email to confirm registration.");
+          alert("Account created successfully!");
           closeAuthModal();
         }
       } else {
@@ -368,9 +395,22 @@
 
     function switchBuyerTab(subTab) {
       document.getElementById('buyer-feed-view').classList.add('hidden');
+      document.getElementById('buyer-orders-view').classList.add('hidden');
       document.getElementById('buyer-cashback-view').classList.add('hidden');
+
       if (subTab === 'feed') document.getElementById('buyer-feed-view').classList.remove('hidden');
+      if (subTab === 'orders') document.getElementById('buyer-orders-view').classList.remove('hidden');
       if (subTab === 'cashback') document.getElementById('buyer-cashback-view').classList.remove('hidden');
+    }
+
+    function switchSellerSubTab(subTab) {
+      if (subTab === 'upload') {
+        document.getElementById('seller-upload-form').classList.remove('hidden');
+        document.getElementById('seller-orders-desk').classList.add('hidden');
+      } else {
+        document.getElementById('seller-upload-form').classList.add('hidden');
+        document.getElementById('seller-orders-desk').classList.remove('hidden');
+      }
     }
 
     function updateSellerLimits() {
@@ -398,7 +438,7 @@
                 <h3 class="font-bold text-white text-md mt-1">Sneaker Hub Harare</h3>
                 <p class="text-lg font-extrabold text-amber-400">$45.00 USD</p>
               </div>
-              <button onclick="triggerPaynowModal('Sneaker Hub', 45)" class="bg-green-600 text-white font-bold py-2 px-3 rounded text-xs">Buy / Negotiate</button>
+              <button onclick="triggerPaynowModal('Sneaker Hub Harare', 45)" class="bg-green-600 text-white font-bold py-2 px-3 rounded text-xs">Buy / Negotiate</button>
             </div>
           </div>`;
         return;
@@ -437,6 +477,7 @@
     }
 
     function triggerPaynowModal(itemTitle, price) {
+      selectedProductForOffer = { title: itemTitle, price: price };
       document.getElementById('modal-item-details').innerText = `Item: ${itemTitle} | Fixed Price: $${price}.00 USD`;
       document.getElementById('paynow-modal').classList.remove('hidden');
     }
@@ -448,8 +489,34 @@
     function processMobilePayment() {
       const phone = document.getElementById('ecocash-number').value;
       if(!phone) { alert('Please enter EcoCash number'); return; }
-      alert(`Prompt sent to ${phone}. Authorize payment on your mobile device.`);
+      
+      const offerPrice = document.getElementById('offer-price').value || selectedProductForOffer.price;
+      addOrderToBuyerList(selectedProductForOffer.title, offerPrice, 'Processing Payment');
+      
+      alert(`EcoCash prompt sent to ${phone} for $${offerPrice}. Check your phone to authorize.`);
       closePaynowModal();
+    }
+
+    function openWhatsAppNegotiation() {
+      const offerPrice = document.getElementById('offer-price').value || selectedProductForOffer.price;
+      const msg = encodeURIComponent(`Hi! I am interested in buying "${selectedProductForOffer.title}" listed for $${selectedProductForOffer.price}. My offer is $${offerPrice}. Is this available?`);
+      
+      addOrderToBuyerList(selectedProductForOffer.title, offerPrice, 'WhatsApp Negotiating');
+      window.open(`https://wa.me/263770000000?text=${msg}`, '_blank');
+      closePaynowModal();
+    }
+
+    function addOrderToBuyerList(title, price, status) {
+      const ordersList = document.getElementById('buyer-orders-list');
+      ordersList.innerHTML = `
+        <div class="border p-3 rounded-lg flex justify-between items-center bg-gray-50 text-xs mb-2">
+          <div>
+            <h4 class="font-bold text-gray-800">${title}</h4>
+            <p class="text-gray-500">Price Offered: $${price}.00 USD</p>
+          </div>
+          <span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[10px]">${status}</span>
+        </div>
+      ` + ordersList.innerHTML;
     }
 
     loadProductsFromDB();
